@@ -186,10 +186,19 @@
             background-color: var(--secondary-hover); 
         }
 
+        .btn-switch { 
+            background-color: #9932CC; 
+        }
+        .btn-switch:hover { 
+            background-color: #7B22A6; 
+        }
+
         .btn-snap { 
             background-color: var(--success); 
             margin-top: 10px; 
             display: none; 
+            font-size: 17px;
+            padding: 15px;
         }
         .btn-snap:hover { 
             background-color: var(--success-hover); 
@@ -228,7 +237,13 @@
         #video-stream { 
             width: 100%; 
             height: auto; 
-            display: block; 
+            display: block;
+            transform: scaleX(1);
+            transition: transform 0.2s ease;
+        }
+        /* Kamera depan tampilan cermin */
+        #video-stream.user-facing {
+            transform: scaleX(-1);
         }
 
         .preview-wrapper {
@@ -290,7 +305,6 @@
             font-weight: 500;
         }
 
-        /* Kode verifikasi posisi kanan atas */
         .right-edge {
             right: 15px; 
             top: 120px;
@@ -303,7 +317,6 @@
             font-weight: 500;
         }
 
-        /* === PERBAIKAN POSISI STEMPEL UNTUK SEMUA PILIHAN === */
         .stempel-wrapper {
             max-width: 75%;
         }
@@ -403,6 +416,16 @@
             margin-bottom: 15px;
         }
 
+        /* Efek anti getar saat menjepret */
+        @keyframes snapStable {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.995); }
+            100% { transform: scale(1); }
+        }
+        .snap-stable {
+            animation: snapStable 0.2s ease-out;
+        }
+
         @media (max-width: 480px) {
             body { padding: 10px; }
             .control-panel { padding: 15px; }
@@ -436,13 +459,16 @@
 
         <div id="camera-stream-container">
             <video id="video-stream" autoplay playsinline muted></video>
-            <button type="button" class="btn-snap" id="snapBtn" onclick="takeSnapshot()">📸 JEPRET FOTO</button>
+            <div class="btn-group-row">
+                <button type="button" class="btn-switch" id="switchCamBtn" onclick="switchCamera()">🔄 Ganti Kamera</button>
+                <button type="button" class="btn-snap" id="snapBtn" onclick="takeSnapshot()">📸 JEPRET FOTO</button>
+            </div>
         </div>
 
         <div class="settings-grid">
             <div class="input-group">
                 <label>Waktu (Jam:Menit)</label>
-                <input type="text" id="timeInput" value="21:45">
+                <input type="text" id="timeInput" value="21:50">
             </div>
             <div class="input-group">
                 <label>Posisi Stempel</label>
@@ -513,10 +539,9 @@
 
             <div class="overlay right-edge" id="out-verify"></div>
 
-            <!-- Pembungkus stempel yang bisa berubah posisi -->
             <div class="overlay stempel-wrapper bottom-left" id="stempel-container">
                 <div class="time-badge">
-                    <span id="out-time">21:45</span><span class="check-circle">✔</span>
+                    <span id="out-time">21:50</span><span class="check-circle">✔</span>
                 </div>
                 <div class="info-container">
                     <div class="info-title" id="out-title">CARY IN</div>
@@ -531,15 +556,15 @@
 
 <script>
     let videoStreamTrack = null;
+    let currentCameraMode = 'environment'; // 'environment' = belakang, 'user' = depan
     const DEFAULT_VALUES = {
-        time: "21:45",
+        time: "21:50",
         title: "CARY IN",
         date: "Minggu, 5 Juli 2026 WITA",
         address1: "Pallantikang, Kec. Pattallassang, Kabupaten",
         address2: "Gowa, Sulawesi Selatan 92173"
     };
 
-    // Fungsi buat kode verifikasi acak unik
     function generateRandomVerifyCode() {
         const prefix = "ITVPSTR3USP9PE";
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -586,70 +611,73 @@
     window.onload = function() {
         const savedTheme = localStorage.getItem('theme');
         if(savedTheme === 'light') toggleTheme();
-
-        // Buat kode acak otomatis saat halaman dibuka
         generateNewVerify();
         setupPositionControl();
     };
 
-    // === FUNGSI PERUBAH POSISI YANG SUDAH DIPERBAIKI ===
     function setupPositionControl() {
         const stempel = document.getElementById('stempel-container');
         document.getElementById('positionSelect').addEventListener('change', function(e) {
-            // Hapus semua kelas posisi lama
             stempel.classList.remove('bottom-left', 'bottom-right', 'top-left', 'top-right');
-            // Tambahkan kelas posisi baru
             stempel.classList.add(e.target.value);
         });
     }
 
-    function startCamera() {
+    // === FUNGSI GANTI KAMERA ===
+    async function startCamera() {
+        stopCamera();
+        const video = document.getElementById('video-stream');
         const constraints = { 
             video: { 
-                facingMode: { exact: "environment" },
+                facingMode: currentCameraMode,
                 width: { ideal: 1280 },
-                height: { ideal: 720 }
-            } 
+                height: { ideal: 720 },
+                frameRate: { ideal: 30, min: 20 } // Anti getar dengan stabilisasi frame
+            },
+            audio: false
         };
 
-        navigator.mediaDevices.getUserMedia(constraints)
-            .then(function(stream) {
-                const video = document.getElementById('video-stream');
-                video.srcObject = stream;
-                videoStreamTrack = stream;
-                document.getElementById('camera-stream-container').style.display = 'block';
-                document.getElementById('snapBtn').style.display = 'block';
-                Swal.fire({ icon: 'success', title: 'Kamera Aktif!', timer: 1500, showConfirmButton: false });
-            })
-            .catch(function(err) {
-                navigator.mediaDevices.getUserMedia({ video: true })
-                    .then(function(stream) {
-                        const video = document.getElementById('video-stream');
-                        video.srcObject = stream;
-                        videoStreamTrack = stream;
-                        document.getElementById('camera-stream-container').style.display = 'block';
-                        document.getElementById('snapBtn').style.display = 'block';
-                        Swal.fire({ icon: 'warning', title: 'Kamera Aktif', text: 'Tidak dapat memastikan kamera belakang.', timer: 2000 });
-                    })
-                    .catch(function(error) {
-                        Swal.fire({ 
-                            icon: 'error', 
-                            title: 'Gagal Akses Kamera', 
-                            text: 'Pastikan memberikan izin kamera pada setelan HP dan browser Anda.',
-                            confirmButtonColor: '#ff0000'
-                        });
-                    });
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia(constraints);
+            video.srcObject = stream;
+            videoStreamTrack = stream;
+            
+            // Tampilan cermin untuk kamera depan
+            if(currentCameraMode === 'user') {
+                video.classList.add('user-facing');
+            } else {
+                video.classList.remove('user-facing');
+            }
+
+            document.getElementById('camera-stream-container').style.display = 'block';
+            document.getElementById('snapBtn').style.display = 'block';
+            Swal.fire({ icon: 'success', title: `Kamera ${currentCameraMode === 'user' ? 'Depan' : 'Belakang'} Aktif!`, timer: 1500, showConfirmButton: false });
+        } catch (err) {
+            console.error('Error akses kamera:', err);
+            Swal.fire({ 
+                icon: 'error', 
+                title: 'Gagal Akses Kamera', 
+                text: 'Pastikan memberikan izin kamera pada setelan HP dan browser Anda.',
+                confirmButtonColor: '#ff0000'
             });
+        }
+    }
+
+    async function switchCamera() {
+        currentCameraMode = currentCameraMode === 'environment' ? 'user' : 'environment';
+        await startCamera();
     }
 
     function stopCamera() {
         if (videoStreamTrack) {
             videoStreamTrack.getTracks().forEach(track => track.stop());
             document.getElementById('camera-stream-container').style.display = 'none';
+            document.getElementById('snapBtn').style.display = 'none';
             videoStreamTrack = null;
         }
     }
 
+    // === FUNGSI JEPRET DENGAN ANTI GETAR ===
     function takeSnapshot() {
         const video = document.getElementById('video-stream');
         if(!video.videoWidth) {
@@ -657,38 +685,46 @@
             return;
         }
 
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        
-        document.getElementById('preview-img').src = canvas.toDataURL('image/jpeg', 0.95);
-        stopCamera();
-        Swal.fire({ icon: 'success', title: 'Berhasil Dijepret!', timer: 1500, showConfirmButton: false });
+        // Efek stabilisasi saat menjepret
+        const camContainer = document.getElementById('camera-stream-container');
+        camContainer.classList.add('snap-stable');
+        setTimeout(() => camContainer.classList.remove('snap-stable'), 200);
+
+        // Tunda sejenak untuk menghilangkan getar jari
+        setTimeout(() => {
+            const canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+
+            // Balik gambar jika menggunakan kamera depan
+            if(currentCameraMode === 'user') {
+                ctx.translate(canvas.width, 0);
+                ctx.scale(-1, 1);
+            }
+
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            document.getElementById('preview-img').src = canvas.toDataURL('image/jpeg', 0.98);
+            stopCamera();
+            Swal.fire({ icon: 'success', title: 'Berhasil Dijepret! Hasil Lebih Stabil', timer: 1500, showConfirmButton: false });
+        }, 150);
     }
 
     document.getElementById('imageInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (!file) return;
-
         if (!file.type.startsWith('image/')) {
             Swal.fire({ icon: 'error', title: 'File Tidak Didukung', text: 'Silakan pilih file gambar yang valid.' });
             return;
         }
-
         const reader = new FileReader();
         reader.onload = function(event) {
             document.getElementById('preview-img').src = event.target.result;
             Swal.fire({ icon: 'success', title: 'Foto Dimuat!', timer: 1500, showConfirmButton: false });
         }
-        reader.onerror = () => {
-            Swal.fire({ icon: 'error', title: 'Gagal Membaca File' });
-        }
         reader.readAsDataURL(file);
     });
 
-    // Sinkronisasi input ke tampilan pratinjau
     document.getElementById('timeInput').addEventListener('input', e => {
         document.getElementById('out-time').innerText = e.target.value;
     });
@@ -717,7 +753,6 @@
         const format = document.getElementById('formatSelect').value;
         const namaFile = `shanted_timemark_${new Date().toISOString().slice(0,10)}.${format}`;
         
-        // Konfigurasi tangkapan layar yang memaksa semua elemen termasuk jam tetap terlihat
         html2canvas(container, { 
             useCORS: true, 
             scale: 3,
@@ -726,7 +761,6 @@
             allowTaint: true,
             logging: false,
             onclone: (clonedDoc) => {
-                // Paksa semua elemen stempel tetap terlihat
                 const clonedElements = clonedDoc.querySelectorAll('.overlay, .time-badge, #out-time');
                 clonedElements.forEach(el => {
                     el.style.visibility = 'visible';
@@ -738,27 +772,11 @@
         }).then(canvas => {
             const link = document.createElement('a');
             link.download = namaFile;
-            
-            if(format === 'jpeg') {
-                link.href = canvas.toDataURL('image/jpeg', 0.92);
-            } else {
-                link.href = canvas.toDataURL('image/png');
-            }
-            
+            link.href = format === 'jpeg' ? canvas.toDataURL('image/jpeg', 0.92) : canvas.toDataURL('image/png');
             link.click();
-            
-            Swal.fire({ 
-                icon: 'success', 
-                title: 'Berhasil Disimpan!', 
-                text: 'Cek galeri atau folder unduhan Anda.', 
-                confirmButtonColor: '#ff0000' 
-            });
+            Swal.fire({ icon: 'success', title: 'Berhasil Disimpan!', text: 'Cek galeri atau folder unduhan Anda.', confirmButtonColor: '#ff0000' });
         }).catch(err => {
-            Swal.fire({ 
-                icon: 'error', 
-                title: 'Gagal Menyimpan', 
-                text: 'Terjadi kesalahan: ' + err.message 
-            });
+            Swal.fire({ icon: 'error', title: 'Gagal Menyimpan', text: 'Terjadi kesalahan: ' + err.message });
         });
     }
 </script>
