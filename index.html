@@ -22,6 +22,7 @@
             --success-hover: #218838;
             --accent: #f2c12e;
             --shadow: 0 4px 12px rgba(0,0,0,0.4);
+            --stempel-scale: 1; /* Skala dasar stempel */
         }
 
         .light-mode {
@@ -126,6 +127,24 @@
             box-sizing: border-box; 
             font-family: inherit;
             font-size: 15px;
+        }
+
+        /* Gaya Slider Ukuran */
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+        }
+        .slider-container input[type="range"] {
+            flex: 1;
+            padding: 0;
+        }
+        .slider-value {
+            min-width: 50px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--accent);
         }
 
         .input-group input:focus, .input-group select:focus {
@@ -241,7 +260,6 @@
             transform: scaleX(1);
             transition: transform 0.2s ease;
         }
-        /* Kamera depan tampilan cermin */
         #video-stream.user-facing {
             transform: scaleX(-1);
         }
@@ -317,9 +335,15 @@
             font-weight: 500;
         }
 
+        /* === PENGATURAN SKALA STEMPEL === */
         .stempel-wrapper {
             max-width: 75%;
+            transform-origin: bottom left; /* Titik ukur dari sudut kiri bawah */
+            transform: scale(var(--stempel-scale));
         }
+        .stempel-wrapper.bottom-right { transform-origin: bottom right; }
+        .stempel-wrapper.top-left { transform-origin: top left; }
+        .stempel-wrapper.top-right { transform-origin: top right; }
 
         .stempel-wrapper.bottom-left { 
             bottom: 25px; 
@@ -416,7 +440,6 @@
             margin-bottom: 15px;
         }
 
-        /* Efek anti getar saat menjepret */
         @keyframes snapStable {
             0% { transform: scale(1); }
             50% { transform: scale(0.995); }
@@ -468,7 +491,7 @@
         <div class="settings-grid">
             <div class="input-group">
                 <label>Waktu (Jam:Menit)</label>
-                <input type="text" id="timeInput" value="21:50">
+                <input type="text" id="timeInput" value="21:57">
             </div>
             <div class="input-group">
                 <label>Posisi Stempel</label>
@@ -478,6 +501,19 @@
                     <option value="top-left">Kiri Atas</option>
                     <option value="top-right">Kanan Atas</option>
                 </select>
+            </div>
+        </div>
+
+        <!-- === SLIDER UKURAN STEMPEL === -->
+        <div class="input-group">
+            <label>Ukuran Stempel</label>
+            <div class="slider-container">
+                <span>🔍 Kecil</span>
+                <input type="range" id="stempelSize" min="0.6" max="1.5" step="0.05" value="1">
+                <span>Besar 🔍</span>
+            </div>
+            <div style="text-align:center; font-size:13px; color:var(--text-muted);">
+                Skala: <span id="sizeValue">100%</span>
             </div>
         </div>
 
@@ -503,14 +539,6 @@
         </div>
 
         <div class="settings-grid">
-            <div class="input-group">
-                <label>Ukuran Teks</label>
-                <select id="fontSizeSelect">
-                    <option value="small">Kecil</option>
-                    <option value="medium" selected>Sedang</option>
-                    <option value="large">Besar</option>
-                </select>
-            </div>
             <div class="input-group">
                 <label>Format Simpan</label>
                 <select id="formatSelect">
@@ -541,7 +569,7 @@
 
             <div class="overlay stempel-wrapper bottom-left" id="stempel-container">
                 <div class="time-badge">
-                    <span id="out-time">21:50</span><span class="check-circle">✔</span>
+                    <span id="out-time">21:57</span><span class="check-circle">✔</span>
                 </div>
                 <div class="info-container">
                     <div class="info-title" id="out-title">CARY IN</div>
@@ -556,13 +584,14 @@
 
 <script>
     let videoStreamTrack = null;
-    let currentCameraMode = 'environment'; // 'environment' = belakang, 'user' = depan
+    let currentCameraMode = 'environment';
     const DEFAULT_VALUES = {
-        time: "21:50",
+        time: "21:57",
         title: "CARY IN",
         date: "Minggu, 5 Juli 2026 WITA",
         address1: "Pallantikang, Kec. Pattallassang, Kabupaten",
-        address2: "Gowa, Sulawesi Selatan 92173"
+        address2: "Gowa, Sulawesi Selatan 92173",
+        stempelSize: 1
     };
 
     function generateRandomVerifyCode() {
@@ -601,11 +630,23 @@
 
     function resetToDefault() {
         Object.keys(DEFAULT_VALUES).forEach(key => {
-            document.getElementById(`${key}Input`).value = DEFAULT_VALUES[key];
-            document.getElementById(`out-${key}`).innerText = DEFAULT_VALUES[key];
+            if(key === 'stempelSize') {
+                document.getElementById('stempelSize').value = DEFAULT_VALUES[key];
+                updateStempelSize();
+            } else {
+                document.getElementById(`${key}Input`).value = DEFAULT_VALUES[key];
+                document.getElementById(`out-${key}`).innerText = DEFAULT_VALUES[key];
+            }
         });
         generateNewVerify();
         Swal.fire({ icon: 'info', title: 'Kembali ke Nilai Default', timer: 1200, showConfirmButton: false });
+    }
+
+    // === FUNGSI PERUBAH UKURAN STEMPEL ===
+    function updateStempelSize() {
+        const nilai = document.getElementById('stempelSize').value;
+        document.documentElement.style.setProperty('--stempel-scale', nilai);
+        document.getElementById('sizeValue').innerText = Math.round(nilai * 100) + '%';
     }
 
     window.onload = function() {
@@ -613,6 +654,8 @@
         if(savedTheme === 'light') toggleTheme();
         generateNewVerify();
         setupPositionControl();
+        // Pasang pemantau untuk slider ukuran
+        document.getElementById('stempelSize').addEventListener('input', updateStempelSize);
     };
 
     function setupPositionControl() {
@@ -623,7 +666,6 @@
         });
     }
 
-    // === FUNGSI GANTI KAMERA ===
     async function startCamera() {
         stopCamera();
         const video = document.getElementById('video-stream');
@@ -632,7 +674,7 @@
                 facingMode: currentCameraMode,
                 width: { ideal: 1280 },
                 height: { ideal: 720 },
-                frameRate: { ideal: 30, min: 20 } // Anti getar dengan stabilisasi frame
+                frameRate: { ideal: 30, min: 20 }
             },
             audio: false
         };
@@ -642,7 +684,6 @@
             video.srcObject = stream;
             videoStreamTrack = stream;
             
-            // Tampilan cermin untuk kamera depan
             if(currentCameraMode === 'user') {
                 video.classList.add('user-facing');
             } else {
@@ -653,7 +694,6 @@
             document.getElementById('snapBtn').style.display = 'block';
             Swal.fire({ icon: 'success', title: `Kamera ${currentCameraMode === 'user' ? 'Depan' : 'Belakang'} Aktif!`, timer: 1500, showConfirmButton: false });
         } catch (err) {
-            console.error('Error akses kamera:', err);
             Swal.fire({ 
                 icon: 'error', 
                 title: 'Gagal Akses Kamera', 
@@ -677,7 +717,6 @@
         }
     }
 
-    // === FUNGSI JEPRET DENGAN ANTI GETAR ===
     function takeSnapshot() {
         const video = document.getElementById('video-stream');
         if(!video.videoWidth) {
@@ -685,19 +724,16 @@
             return;
         }
 
-        // Efek stabilisasi saat menjepret
         const camContainer = document.getElementById('camera-stream-container');
         camContainer.classList.add('snap-stable');
         setTimeout(() => camContainer.classList.remove('snap-stable'), 200);
 
-        // Tunda sejenak untuk menghilangkan getar jari
         setTimeout(() => {
             const canvas = document.createElement('canvas');
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             const ctx = canvas.getContext('2d');
 
-            // Balik gambar jika menggunakan kamera depan
             if(currentCameraMode === 'user') {
                 ctx.translate(canvas.width, 0);
                 ctx.scale(-1, 1);
