@@ -805,6 +805,7 @@
         const container = document.getElementById('canvas-container');
         const format = document.getElementById('formatSelect').value;
         const namaFile = `shanted_timemark_${new Date().toISOString().slice(0,10)}.${format}`;
+        const stempelContainer = document.getElementById('stempel-container');
         
         html2canvas(container, { 
             useCORS: true, 
