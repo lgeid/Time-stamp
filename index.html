@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Timemark Custom - Fixed</title>
+    <title>Generator Timemark Custom - Final</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body {
@@ -62,10 +62,10 @@
         .logo-text .time-part { color: #f2c12e; } 
         .top-right .accuracy { font-size: 12px; opacity: 0.9; }
 
-        /* Sisi Kanan Vertikal (DIUBAH AGAR SUPPORT HTML2CANVAS) */
+        /* Sisi Kanan Vertikal (POSISI SUDAH DINAIKKAN) */
         .right-edge {
             right: 15px;
-            bottom: 30%; /* Penyesuaian posisi vertikal */
+            bottom: 50%; /* Dinaikkan ke tengah agar tidak nabrak teks bawah */
             transform: rotate(-90deg);
             transform-origin: right bottom;
             font-size: 10px;
@@ -77,7 +77,7 @@
         /* Pojok Kiri Bawah */
         .bottom-left { bottom: 25px; left: 20px; }
 
-        /* Kotak Merah Waktu (DIUBAH AGAR SUPPORT HTML2CANVAS) */
+        /* Kotak Merah Waktu */
         .time-badge {
             background-color: #ff0000;
             color: white;
@@ -86,7 +86,7 @@
             border-radius: 4px;
             margin-bottom: 12px;
             box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
-            line-height: 1; /* Menjaga ukuran kotak */
+            line-height: 1; 
         }
         
         #out-time {
@@ -105,11 +105,11 @@
             border-radius: 50%;
             display: inline-block;
             text-align: center;
-            line-height: 22px; /* Pusatkan centang vertikal */
+            line-height: 22px;
             font-size: 14px;
             font-weight: bold;
             vertical-align: middle;
-            margin-left: 6px; /* Jarak antara jam dan centang */
+            margin-left: 6px;
         }
 
         /* Kotak Informasi Garis Kuning */
@@ -153,8 +153,8 @@
             <input type="text" id="address2Input" value="Gowa, Sulawesi Selatan 92173">
         </div>
         <div class="input-group">
-            <label>Kode Verifikasi Kanan</label>
-            <input type="text" id="verifyInput" value="URDMN2MAPK4PXW Timemark Verified">
+            <label>Kode Verifikasi Kanan (Otomatis Acak)</label>
+            <input type="text" id="verifyInput" value="">
         </div>
         <button onclick="downloadImage()">Simpan Gambar</button>
     </div>
@@ -169,8 +169,7 @@
             </div>
 
             <div class="overlay right-edge" id="out-verify">
-                🛡️ URDMN2MAPK4PXW Timemark Verified
-            </div>
+                </div>
 
             <div class="overlay bottom-left">
                 <div class="time-badge">
@@ -188,6 +187,23 @@
 </div>
 
 <script>
+    // FUNGSI UNTUK MENGHASILKAN KODE ACAK OTOMATIS
+    function generateRandomCode(length) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return result;
+    }
+
+    // Mengisi kode acak saat halaman pertama kali dibuka
+    window.onload = function() {
+        const randomStr = generateRandomCode(14) + ' Timemark Verified';
+        document.getElementById('verifyInput').value = randomStr;
+        document.getElementById('out-verify').innerText = '🛡️ ' + randomStr;
+    };
+
     const imageInput = document.getElementById('imageInput');
     const previewImg = document.getElementById('preview-img');
 
