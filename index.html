@@ -124,123 +124,86 @@
 
         .overlay { position: absolute; color: white; pointer-events: none; font-family: inherit; font-weight: 700 !important; }
 
-        /* === PETA MINI (MINI MAP) KIRI ATAS === */
+        /* PETA MINI KIRI ATAS */
         .mini-map-container {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 85px;
-            height: 110px;
-            background-color: #e0e6c8;
-            /* SVG Pattern Jalan Peta agar aman html2canvas */
+            position: absolute; top: 20px; left: 20px; width: 85px; height: 110px; background-color: #e0e6c8;
             background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><path d="M20,0 L20,100 M60,0 L60,100 M0,30 L100,30 M0,70 L100,70" stroke="%23ffffff" stroke-width="4"/><path d="M30,-10 L80,110" stroke="%23f2c12e" stroke-width="6"/></svg>');
-            border: 2px solid white;
-            border-radius: 6px;
-            box-shadow: 2px 2px 8px rgba(0,0,0,0.6);
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: center;
-            padding-bottom: 6px;
-            z-index: 5;
-            overflow: hidden;
-            transition: opacity 0.3s ease;
+            border: 2px solid white; border-radius: 6px; box-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+            display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 6px; z-index: 5;
         }
-        .mini-map-container .pin {
-            position: absolute;
-            top: 45%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 26px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-        }
-        .mini-map-container .coords {
-            background: rgba(0,0,0,0.7);
-            color: white;
-            font-size: 9px;
-            padding: 2px 4px;
-            border-radius: 3px;
-            letter-spacing: 0.5px;
-            font-weight: 600;
-        }
+        .mini-map-container .pin { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); font-size: 26px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+        .mini-map-container .coords { background: rgba(0,0,0,0.7); color: white; font-size: 9px; padding: 2px 4px; border-radius: 3px; letter-spacing: 0.5px; font-weight: 600; }
 
         .top-right { top: 20px; right: 20px; text-align: right; }
         .logo-text { font-size: 22px; font-weight: 900; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .logo-text .brand { color: var(--accent); } 
+        .logo-text .brand { color: #f2c12e; } 
         .accuracy { font-size: 13px; opacity: 0.95; font-weight: 500; }
-
         .right-edge { right: 15px; top: 140px; transform: rotate(-90deg); transform-origin: right top; font-size: 11px; letter-spacing: 1.2px; opacity: 0.85; white-space: nowrap; font-weight: 500; }
 
+        /* POSISI STEMPEL */
         .stempel-wrapper { max-width: 85%; transform-origin: inherit !important; transform: scale(var(--stempel-scale)) !important; line-height: 1.5 !important; }
         .stempel-wrapper.bottom-left { bottom: 25px; left: 20px; text-align: left; transform-origin: bottom left !important; }
         .stempel-wrapper.bottom-right { bottom: 25px; right: 20px; text-align: right; transform-origin: bottom right !important; }
-        
-        /* Jika Stempel di atas, geser agar tidak nabrak Peta */
         .stempel-wrapper.top-left { top: 140px; left: 20px; text-align: left; transform-origin: top left !important; }
         .stempel-wrapper.top-right { top: 140px; right: 20px; text-align: right; transform-origin: top right !important; }
 
-        /* BASE STYLE STEMPEL */
+        /* BUG FIX: BASE STYLE STEMPEL AMAN UNTUK HTML2CANVAS */
         .time-badge {
-            display: inline-flex !important; align-items: center !important; justify-content: flex-start !important;
+            display: flex !important; align-items: center !important; justify-content: flex-start !important;
             min-height: 48px !important; padding: 8px 16px !important; border-radius: 8px !important;
-            margin-bottom: 8px !important; gap: 12px !important; box-sizing: border-box !important;
+            margin-bottom: 8px !important; gap: 12px !important; width: max-content !important;
         }
         #out-time { font-size: 32px !important; font-weight: 800 !important; line-height: 1 !important; margin: 0 !important; }
+        
+        /* Check icon dipisahkan jadi elemen span nyata agar terbaca html2canvas */
         .check-circle {
             width: 28px !important; height: 28px !important; border-radius: 50% !important;
-            display: inline-flex !important; align-items: center !important; justify-content: center !important;
-            font-size: 18px !important; font-weight: 900 !important; line-height: 1 !important;
+            display: flex !important; align-items: center !important; justify-content: center !important;
+            font-size: 16px !important; font-weight: 900 !important;
         }
-        .check-circle::after { content: "✔" !important; display: block !important; }
         
         .info-container { display: block !important; margin-top: 8px !important; }
         .info-title { font-size: 24px !important; font-weight: 800 !important; margin-bottom: 6px !important; line-height: 1.2 !important; }
         .info-date, .info-address { font-size: 16px !important; margin-bottom: 4px !important; line-height: 1.4 !important; font-weight: 600 !important; display: block !important; }
-        .info-address:last-child { margin-bottom: 0 !important; }
 
-        /* ========================================= */
-        /* GAYA STEMPEL 1: KLASIK MERAH (DEFAULT)    */
-        /* ========================================= */
-        .style-klasik .time-badge { background-color: var(--primary) !important; color: white !important; box-shadow: 2px 2px 6px rgba(0,0,0,0.5) !important; }
-        .style-klasik #out-time { color: white !important; }
-        .style-klasik .check-circle { background-color: white !important; }
-        .style-klasik .check-circle::after { color: var(--primary) !important; }
+        /* ======================================================= */
+        /* GAYA STEMPEL (Menggunakan Hex Code Mutlak tanpa var CSS)*/
+        /* ======================================================= */
+        
+        /* 1. KLASIK MERAH */
+        .style-klasik .time-badge { background-color: #ff0000 !important; box-shadow: 2px 2px 6px rgba(0,0,0,0.5) !important; }
+        .style-klasik #out-time { color: #ffffff !important; }
+        .style-klasik .check-circle { background-color: #ffffff !important; }
+        .style-klasik .check-circle .icon-v { color: #ff0000 !important; }
         .style-klasik .info-container { padding: 0 !important; border: none !important; }
         .style-klasik .info-title, .style-klasik .info-date, .style-klasik .info-address { color: #ffffff !important; }
 
-        /* ========================================= */
-        /* GAYA STEMPEL 2: GELAP ELEGAN (DARK)       */
-        /* ========================================= */
-        .style-gelap .time-badge { background-color: #222222 !important; color: white !important; box-shadow: 2px 2px 6px rgba(0,0,0,0.5) !important; border: 1px solid #444 !important; }
-        .style-gelap #out-time { color: white !important; }
+        /* 2. GELAP ELEGAN */
+        .style-gelap .time-badge { background-color: #222222 !important; box-shadow: 2px 2px 6px rgba(0,0,0,0.5) !important; border: 1px solid #444444 !important; }
+        .style-gelap #out-time { color: #ffffff !important; }
         .style-gelap .check-circle { background-color: #007bff !important; }
-        .style-gelap .check-circle::after { color: white !important; }
+        .style-gelap .check-circle .icon-v { color: #ffffff !important; }
         .style-gelap .info-container { border-left: 4px solid #007bff !important; padding-left: 12px !important; }
         .style-gelap .info-title, .style-gelap .info-date, .style-gelap .info-address { color: #ffffff !important; text-shadow: 1px 1px 2px black !important;}
 
-        /* ========================================= */
-        /* GAYA STEMPEL 3: KACA MODERN (GLASS)       */
-        /* ========================================= */
+        /* 3. KACA MODERN */
         .style-kaca.stempel-wrapper { background: rgba(0, 0, 0, 0.45) !important; padding: 15px !important; border-radius: 12px !important; border: 1px solid rgba(255,255,255,0.2) !important; box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important;}
         .style-kaca .time-badge { background-color: transparent !important; padding: 0 !important; box-shadow: none !important; margin-bottom: 12px !important;}
-        .style-kaca #out-time { color: var(--accent) !important; }
-        .style-kaca .check-circle { background-color: var(--accent) !important; }
-        .style-kaca .check-circle::after { color: #000 !important; }
+        .style-kaca #out-time { color: #f2c12e !important; }
+        .style-kaca .check-circle { background-color: #f2c12e !important; }
+        .style-kaca .check-circle .icon-v { color: #000000 !important; }
         .style-kaca .info-container { padding: 0 !important; border: none !important; }
         .style-kaca .info-title, .style-kaca .info-date, .style-kaca .info-address { color: #ffffff !important; }
 
-        /* ========================================= */
-        /* GAYA STEMPEL 4: MINIMALIS OUTLINE         */
-        /* ========================================= */
+        /* 4. MINIMALIS OUTLINE */
         .style-minimalis .time-badge { background-color: transparent !important; padding: 0 !important; box-shadow: none !important; margin-bottom: 5px !important; }
-        .style-minimalis #out-time { color: var(--accent) !important; font-size: 38px !important; text-shadow: 2px 2px 0px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000 !important; }
+        .style-minimalis #out-time { color: #f2c12e !important; font-size: 38px !important; text-shadow: 2px 2px 0px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000 !important; }
         .style-minimalis .check-circle { display: none !important; }
-        .style-minimalis .info-container { padding-top: 8px !important; border-top: 3px solid var(--accent) !important; }
+        .style-minimalis .info-container { padding-top: 8px !important; border-top: 3px solid #f2c12e !important; }
         .style-minimalis .info-title, .style-minimalis .info-date, .style-minimalis .info-address { color: #ffffff !important; text-shadow: 1px 1px 3px black !important; }
 
 
         .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 15px; }
-
         @keyframes snapFlash { 0% { opacity: 1; filter: brightness(1); } 50% { opacity: 0.7; filter: brightness(2); } 100% { opacity: 1; filter: brightness(1); } }
         .snap-flash { animation: snapFlash 0.3s ease-out; }
 
@@ -383,7 +346,7 @@
             <div class="overlay stempel-wrapper bottom-left style-klasik" id="stempel-container">
                 <div class="time-badge">
                     <span id="out-time">21:50</span>
-                    <span class="check-circle"></span>
+                    <span class="check-circle"><span class="icon-v">✔</span></span>
                 </div>
                 <div class="info-container">
                     <div class="info-title" id="out-title">CARY IN</div>
@@ -409,7 +372,6 @@
     }
 
     function generateRandomCoord() {
-        // Angka acak mirip lokasi Indonesia (Lintang Selatan, Bujur Timur)
         const lat = (Math.random() * (0 - 10) + 10) * -1; 
         const lng = Math.random() * (140 - 95) + 95;
         return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
@@ -422,7 +384,6 @@
         document.getElementById('out-verify').innerText = newCode;
         document.getElementById('coordInput').value = newCoord;
         document.getElementById('out-coords').innerText = newCoord;
-        Swal.fire({ icon: 'success', title: 'Data Diperbarui!', timer: 1000, showConfirmButton: false });
     }
 
     function toggleTheme() {
@@ -439,7 +400,6 @@
         document.getElementById('dateInput').value = tanggal;
         document.getElementById('out-time').innerText = waktu;
         document.getElementById('out-date').innerText = tanggal;
-        Swal.fire({ icon: 'success', title: 'Waktu Sinkron!', timer: 1000, showConfirmButton: false });
     }
 
     window.onload = function() {
@@ -451,29 +411,24 @@
     function setupControls() {
         const stempel = document.getElementById('stempel-container');
         
-        // Kontrol Posisi
         document.getElementById('positionSelect').addEventListener('change', function(e) {
             stempel.classList.remove('bottom-left', 'bottom-right', 'top-left', 'top-right');
             stempel.classList.add(e.target.value);
         });
 
-        // Kontrol Gaya Stempel (Style)
         document.getElementById('styleSelect').addEventListener('change', function(e) {
             stempel.classList.remove('style-klasik', 'style-gelap', 'style-kaca', 'style-minimalis');
             stempel.classList.add(e.target.value);
         });
 
-        // Kontrol Peta
         document.getElementById('mapToggle').addEventListener('change', function(e) {
             document.getElementById('miniMapWidget').style.display = e.target.value === 'show' ? 'flex' : 'none';
         });
 
-        // Ukuran
         document.getElementById('stempelSize').addEventListener('input', function(e) {
             document.documentElement.style.setProperty('--stempel-scale', e.target.value);
         });
 
-        // Sinkronisasi Input Teks Realtime
         const syncInputs = [
             { id: 'timeInput', target: 'out-time' },
             { id: 'titleInput', target: 'out-title' },
@@ -505,7 +460,7 @@
             document.getElementById('camera-stream-container').style.display = 'block';
             snapWrapper.classList.add('show');
         } catch (err) {
-            Swal.fire({ icon: 'error', title: 'Gagal Akses Kamera', text: 'Izinkan akses kamera di pengaturan perangkat.' });
+            Swal.fire({ icon: 'error', title: 'Gagal Akses Kamera' });
         }
     }
 
@@ -558,7 +513,6 @@
             scale: 3, 
             backgroundColor: null,
             onclone: (clonedDoc) => {
-                // Pastikan transform ukuran tetap terbawa saat diconvert
                 const clonedStempel = clonedDoc.getElementById('stempel-container');
                 clonedStempel.style.transform = `scale(${document.getElementById('stempelSize').value})`;
                 clonedStempel.style.transformOrigin = getComputedStyle(clonedStempel).transformOrigin;
