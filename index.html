@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Timemark Custom - Final</title>
+    <title>Generator Timemark Custom - Camera Support</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body {
@@ -33,11 +33,29 @@
             width: 100%; padding: 10px; border: 1px solid #444; border-radius: 4px;
             background-color: #333; color: white; box-sizing: border-box; font-family: inherit;
         }
+        
+        /* Gaya Tombol */
         button {
             width: 100%; padding: 12px; background-color: #ff0000; color: white;
             border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;
         }
         button:hover { background-color: #cc0000; }
+
+        .btn-container {
+            width: 100%;
+            text-align: justify;
+        }
+        .btn-half {
+            width: 48%;
+            display: inline-block;
+            margin-top: 0;
+            font-size: 14px;
+            padding: 10px;
+        }
+        .btn-gallery { background-color: #444444; }
+        .btn-gallery:hover { background-color: #555555; }
+        .btn-camera { background-color: #007bff; }
+        .btn-camera:hover { background-color: #0056b3; }
 
         /* Area Preview Gambar */
         .preview-wrapper {
@@ -62,10 +80,10 @@
         .logo-text .time-part { color: #f2c12e; } 
         .top-right .accuracy { font-size: 12px; opacity: 0.9; }
 
-        /* Sisi Kanan Vertikal (POSISI SUDAH DINAIKKAN) */
+        /* Sisi Kanan Vertikal */
         .right-edge {
             right: 15px;
-            bottom: 50%; /* Dinaikkan ke tengah agar tidak nabrak teks bawah */
+            bottom: 50%; 
             transform: rotate(-90deg);
             transform-origin: right bottom;
             font-size: 10px;
@@ -129,9 +147,16 @@
 
     <div class="control-panel">
         <div class="input-group">
-            <label>Unggah Foto</label>
-            <input type="file" id="imageInput" accept="image/*">
+            <label>Pilih Gambar / Ambil Foto</label>
+            <div class="btn-container">
+                <button type="button" class="btn-half btn-gallery" onclick="document.getElementById('imageInput').click()">📁 Galeri / File</button>
+                <button type="button" class="btn-half btn-camera" style="float: right;" onclick="document.getElementById('cameraInput').click()">📷 Kamera HP</button>
+                <div style="clear: both;"></div>
+            </div>
+            <input type="file" id="imageInput" accept="image/*" style="display: none;">
+            <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
         </div>
+
         <div class="input-group">
             <label>Waktu (Misal: 19:35)</label>
             <input type="text" id="timeInput" value="19:35">
@@ -161,15 +186,14 @@
 
     <div class="preview-wrapper">
         <div id="canvas-container">
-            <img id="preview-img" src="https://via.placeholder.com/600x800/333333/555555?text=Unggah+Foto+Di+Atas" alt="Preview">
+            <img id="preview-img" src="https://via.placeholder.com/600x800/333333/555555?text=Pilih+Sumber+Foto+Di+Atas" alt="Preview">
             
             <div class="overlay top-right">
                 <div class="logo-text"><span class="time-part">Time</span>mark</div>
                 <div class="accuracy">Foto 100% akurat</div>
             </div>
 
-            <div class="overlay right-edge" id="out-verify">
-                </div>
+            <div class="overlay right-edge" id="out-verify"></div>
 
             <div class="overlay bottom-left">
                 <div class="time-badge">
@@ -187,7 +211,7 @@
 </div>
 
 <script>
-    // FUNGSI UNTUK MENGHASILKAN KODE ACAK OTOMATIS
+    // FUNGSI KODE ACAK OTOMATIS
     function generateRandomCode(length) {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         let result = '';
@@ -197,7 +221,6 @@
         return result;
     }
 
-    // Mengisi kode acak saat halaman pertama kali dibuka
     window.onload = function() {
         const randomStr = generateRandomCode(14) + ' Timemark Verified';
         document.getElementById('verifyInput').value = randomStr;
@@ -205,9 +228,11 @@
     };
 
     const imageInput = document.getElementById('imageInput');
+    const cameraInput = document.getElementById('cameraInput');
     const previewImg = document.getElementById('preview-img');
 
-    imageInput.addEventListener('change', function(e) {
+    // Handler membaca file / hasil tangkapan kamera
+    function prosesGambar(e) {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
@@ -216,7 +241,10 @@
             }
             reader.readAsDataURL(file);
         }
-    });
+    }
+
+    imageInput.addEventListener('change', prosesGambar);
+    cameraInput.addEventListener('change', prosesGambar);
 
     function syncInput(inputId, outputId, prefix = "") {
         document.getElementById(inputId).addEventListener('input', function(e) {
@@ -239,7 +267,7 @@
             scale: 2
         }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'timemark-custom.png';
+            link.download = 'timemark-camera.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
         });
