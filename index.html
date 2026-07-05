@@ -336,11 +336,12 @@
 
         /* === PENGUNCAN POSISI STEMPEL === */
         .stempel-wrapper {
-            max-width: 75%;
+            max-width: 85%;
             transform-origin: inherit !important;
             transform: scale(var(--stempel-scale)) !important;
             transition: none !important;
             display: block !important;
+            line-height: 1.5 !important;
         }
         .stempel-wrapper.bottom-left { 
             bottom: 25px; 
@@ -367,7 +368,7 @@
             transform-origin: top right !important;
         }
 
-        /* === PENGUNCAN KOTAK JAM & CENTANG === */
+        /* === PERBAIKAN KOTAK JAM & CENTANG === */
         .time-badge {
             background-color: var(--primary); 
             color: white; 
@@ -375,27 +376,27 @@
             align-items: center !important;
             justify-content: flex-start !important;
             flex-direction: row !important;
-            height: 42px; 
-            padding: 0 12px;
-            border-radius: 6px; 
-            margin-bottom: 12px; 
+            height: auto !important;
+            min-height: 48px !important;
+            padding: 8px 16px !important;
+            border-radius: 8px !important;
+            margin-bottom: 12px !important;
             box-shadow: 2px 2px 6px rgba(0,0,0,0.5); 
             white-space: nowrap !important;
-            box-sizing: border-box;
-            gap: 8px !important;
+            box-sizing: border-box !important;
+            gap: 12px !important;
             position: relative !important;
             visibility: visible !important;
             opacity: 1 !important;
             width: auto !important;
             max-width: 100% !important;
-            min-width: fit-content !important;
         }
 
         #out-time { 
-            font-size: 30px; 
-            font-weight: 800; 
-            letter-spacing: 1px; 
-            line-height: 42px; 
+            font-size: 32px !important; 
+            font-weight: 800 !important; 
+            letter-spacing: 1px !important; 
+            line-height: 1 !important;
             display: inline-block !important;
             visibility: visible !important;
             opacity: 1 !important;
@@ -407,50 +408,66 @@
         }
 
         .check-circle {
-            background-color: white; 
-            color: var(--primary); 
-            width: 24px; 
-            height: 24px; 
-            border-radius: 50%;
+            background-color: white !important; 
+            color: var(--primary) !important; 
+            width: 28px !important; 
+            height: 28px !important; 
+            border-radius: 50% !important;
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
-            font-size: 16px; 
-            font-weight: bold;
+            font-size: 18px !important; 
+            font-weight: 900 !important;
+            content: "✔" !important;
             flex-shrink: 0 !important;
             margin: 0 !important;
             padding: 0 !important;
             position: relative !important;
             right: 0 !important;
             top: 0 !important;
+            line-height: 1 !important;
+        }
+        .check-circle::after {
+            content: "✔" !important;
+            display: block !important;
+            color: var(--primary) !important;
         }
 
+        /* === PERBAIKAN JARAK TEKS AGAR TIDAK TUMPANG TINDIH === */
         .info-container { 
-            border-left: 4px solid var(--accent); 
-            padding: 8px 12px;
-            border-radius: 0 6px 6px 0;
-            backdrop-filter: blur(2px);
-            background-color: rgba(0,0,0,0.5);
-            display: inline-block;
-            text-align: inherit;
+            border-left: 5px solid var(--accent) !important; 
+            padding: 10px 14px !important;
+            border-radius: 0 8px 8px 0 !important;
+            backdrop-filter: blur(4px);
+            background-color: rgba(0,0,0,0.6) !important;
+            display: inline-block !important;
+            text-align: left !important;
             width: auto !important;
             max-width: 100% !important;
+            margin-top: 4px !important;
         }
 
         .info-title { 
-            font-size: 22px; 
-            font-weight: 700; 
-            text-transform: uppercase; 
-            margin-bottom: 4px;
-            word-break: break-word;
+            font-size: 24px !important; 
+            font-weight: 700 !important; 
+            text-transform: uppercase !important; 
+            margin-bottom: 8px !important;
+            word-break: break-word !important;
+            line-height: 1.2 !important;
+            color: rgba(255,255,255,0.9) !important;
         }
 
         .info-date, .info-address { 
-            font-size: 15px; 
-            opacity: 0.95; 
-            margin-bottom: 4px;
-            line-height: 1.4;
-            word-break: break-word;
+            font-size: 16px !important; 
+            opacity: 1 !important; 
+            margin-bottom: 6px !important;
+            line-height: 1.4 !important;
+            word-break: break-word !important;
+            color: white !important;
+            display: block !important;
+        }
+        .info-address:last-child {
+            margin-bottom: 0 !important;
         }
 
         .settings-grid {
@@ -474,9 +491,11 @@
             .control-panel { padding: 15px; }
             .btn-half { flex: 1 1 100%; }
             .right-edge { font-size: 9px; top: 100px; }
-            .info-title { font-size: 18px; }
-            #out-time { font-size: 24px; }
-            .stempel-wrapper { max-width: 85%; }
+            .info-title { font-size: 20px; }
+            #out-time { font-size: 26px; }
+            .stempel-wrapper { max-width: 90%; }
+            .time-badge { min-height: 44px; padding: 6px 14px; gap: 10px; }
+            .check-circle { width: 24px; height: 24px; font-size: 16px; }
         }
     </style>
 </head>
@@ -588,7 +607,8 @@
 
             <div class="overlay stempel-wrapper bottom-left" id="stempel-container">
                 <div class="time-badge">
-                    <span id="out-time">21:50</span><span class="check-circle">✔</span>
+                    <span id="out-time">21:50</span>
+                    <span class="check-circle"></span>
                 </div>
                 <div class="info-container">
                     <div class="info-title" id="out-title">CARY IN</div>
@@ -805,7 +825,6 @@
         const container = document.getElementById('canvas-container');
         const format = document.getElementById('formatSelect').value;
         const namaFile = `shanted_timemark_${new Date().toISOString().slice(0,10)}.${format}`;
-        const stempelContainer = document.getElementById('stempel-container');
         
         html2canvas(container, { 
             useCORS: true, 
@@ -817,11 +836,12 @@
             imageTimeout: 0,
             removeContainer: false,
             onclone: (clonedDoc) => {
-                // Kunci semua posisi agar tidak berubah saat disimpan
+                // Kunci semua posisi dan gaya agar tidak berubah saat disimpan
                 const clonedStempel = clonedDoc.getElementById('stempel-container');
                 const clonedTimeBadge = clonedDoc.querySelector('.time-badge');
                 const clonedTime = clonedDoc.getElementById('out-time');
                 const clonedCheck = clonedDoc.querySelector('.check-circle');
+                const clonedInfo = clonedDoc.querySelector('.info-container');
                 
                 // Kunci posisi stempel
                 clonedStempel.style.transform = `scale(${document.getElementById('stempelSize').value})`;
@@ -830,30 +850,41 @@
                 clonedStempel.style.top = getComputedStyle(stempelContainer).top;
                 clonedStempel.style.left = getComputedStyle(stempelContainer).left;
                 clonedStempel.style.right = getComputedStyle(stempelContainer).right;
+                clonedStempel.style.lineHeight = '1.5';
                 
-                // Kunci susunan jam dan centang
+                // Kunci kotak jam dan centang
                 clonedTimeBadge.style.display = 'inline-flex';
                 clonedTimeBadge.style.flexDirection = 'row';
                 clonedTimeBadge.style.alignItems = 'center';
-                clonedTimeBadge.style.gap = '8px';
-                clonedTimeBadge.style.minWidth = 'fit-content';
+                clonedTimeBadge.style.gap = '12px';
+                clonedTimeBadge.style.padding = '8px 16px';
+                clonedTimeBadge.style.minHeight = '48px';
                 
-                clonedTime.style.display = 'inline-block';
+                clonedTime.style.fontSize = '32px';
                 clonedTime.style.margin = '0';
                 clonedTime.style.padding = '0';
                 
+                clonedCheck.style.display = 'inline-flex';
+                clonedCheck.style.width = '28px';
+                clonedCheck.style.height = '28px';
+                clonedCheck.style.fontSize = '18px';
+                clonedCheck.style.background = 'white';
+                clonedCheck.style.color = 'var(--primary)';
                 clonedCheck.style.position = 'relative';
                 clonedCheck.style.right = '0';
                 clonedCheck.style.top = '0';
-                clonedCheck.style.margin = '0';
-                clonedCheck.style.padding = '0';
+                
+                // Kunci jarak teks agar tidak tumpang tindih
+                clonedInfo.style.marginTop = '4px';
+                clonedInfo.style.padding = '10px 14px';
+                clonedInfo.style.borderRadius = '0 8px 8px 0';
             }
         }).then(canvas => {
             const link = document.createElement('a');
             link.download = namaFile;
             link.href = format === 'jpeg' ? canvas.toDataURL('image/jpeg', 0.92) : canvas.toDataURL('image/png');
             link.click();
-            Swal.fire({ icon: 'success', title: 'Berhasil Disimpan!', text: 'Posisi jam dan centang sudah tetap sempurna.', confirmButtonColor: '#ff0000' });
+            Swal.fire({ icon: 'success', title: 'Berhasil Disimpan!', text: 'Centang rapi, teks tidak berhimpit lagi.', confirmButtonColor: '#ff0000' });
         }).catch(err => {
             Swal.fire({ icon: 'error', title: 'Gagal Menyimpan', text: 'Terjadi kesalahan: ' + err.message });
         });
