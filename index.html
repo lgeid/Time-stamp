@@ -137,7 +137,20 @@
         .logo-text { font-size: 22px; font-weight: 900; margin-bottom: 4px; }
         .logo-text .brand { color: #f2c12e; } 
         .accuracy { font-size: 13px; opacity: 0.95; font-weight: 500; }
-        .right-edge { right: 15px; top: 140px; transform: rotate(-90deg); transform-origin: right top; font-size: 11px; opacity: 0.85; white-space: nowrap; font-weight: 500; }
+        
+        /* FIX: KODE VERIFIKASI KANAN DIGESER LEBIH KE TENGAH */
+        .right-edge { 
+            right: 35px; /* Digeser dari 15px menjadi 35px agar aman dari potongan */
+            top: 150px; 
+            transform: rotate(-90deg); 
+            transform-origin: right top; 
+            font-size: 11px; 
+            opacity: 0.85; 
+            white-space: nowrap; 
+            font-weight: 500; 
+            z-index: 10; 
+            color: #ffffff;
+        }
 
         /* PERBAIKAN BUG APK: PAKSA KERNING DAN SPASI NORMAL AGAR TIDAK TUMPANG TINDIH */
         .stempel-wrapper, .stempel-wrapper * { 
@@ -216,7 +229,8 @@
 
         @media (max-width: 480px) {
             body { padding: 10px; }
-            .right-edge { top: 120px; }
+            /* Penyesuaian right-edge untuk layar HP */
+            .right-edge { top: 130px; right: 28px; }
             .mini-map-container { width: 75px; height: 95px; }
             .mini-map-container .pin { font-size: 22px; }
             .stempel-wrapper { max-width: 90%; }
@@ -432,7 +446,6 @@
             document.getElementById('miniMapWidget').style.display = e.target.value === 'show' ? 'flex' : 'none';
         });
 
-        // PERBAIKAN BUG APK: Skala disuntikkan langsung lewat JS murni ke Elemen
         document.getElementById('stempelSize').addEventListener('input', function(e) {
             stempel.style.transform = `scale(${e.target.value})`;
         });
@@ -516,7 +529,6 @@
         Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
         const container = document.getElementById('canvas-container');
         
-        // PERBAIKAN BUG APK: onclone dihapus total agar tidak terjadi double-rendering di Android
         html2canvas(container, { 
             useCORS: true, 
             scale: 3, 
