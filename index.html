@@ -22,7 +22,7 @@
             --success-hover: #218838;
             --accent: #f2c12e;
             --shadow: 0 4px 12px rgba(0,0,0,0.4);
-            --stempel-scale: 1; /* Skala dasar stempel */
+            --stempel-scale: 1;
         }
 
         .light-mode {
@@ -129,7 +129,6 @@
             font-size: 15px;
         }
 
-        /* Gaya Slider Ukuran */
         .slider-container {
             display: flex;
             align-items: center;
@@ -335,42 +334,44 @@
             font-weight: 500;
         }
 
-        /* === PENGATURAN SKALA STEMPEL === */
+        /* === PERBAIKAN: Titik asal skala tetap sesuai posisi === */
         .stempel-wrapper {
             max-width: 75%;
-            transform-origin: bottom left; /* Titik ukur dari sudut kiri bawah */
-            transform: scale(var(--stempel-scale));
+            transform-origin: inherit !important;
+            transform: scale(var(--stempel-scale)) !important;
+            transition: none !important;
         }
-        .stempel-wrapper.bottom-right { transform-origin: bottom right; }
-        .stempel-wrapper.top-left { transform-origin: top left; }
-        .stempel-wrapper.top-right { transform-origin: top right; }
-
         .stempel-wrapper.bottom-left { 
             bottom: 25px; 
             left: 20px; 
             text-align: left;
+            transform-origin: bottom left !important;
         }
         .stempel-wrapper.bottom-right { 
             bottom: 25px; 
             right: 20px; 
             text-align: right;
+            transform-origin: bottom right !important;
         }
         .stempel-wrapper.top-left { 
             top: 120px; 
             left: 20px; 
             text-align: left;
+            transform-origin: top left !important;
         }
         .stempel-wrapper.top-right { 
             top: 120px; 
             right: 20px; 
             text-align: right;
+            transform-origin: top right !important;
         }
 
         .time-badge {
             background-color: var(--primary); 
             color: white; 
-            display: inline-flex;
-            align-items: center;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
             height: 42px; 
             padding: 0 12px;
             border-radius: 6px; 
@@ -379,9 +380,11 @@
             white-space: nowrap; 
             box-sizing: border-box;
             gap: 8px;
-            position: relative;
+            position: relative !important;
             visibility: visible !important;
             opacity: 1 !important;
+            width: auto !important;
+            max-width: 100% !important;
         }
 
         #out-time { 
@@ -393,6 +396,8 @@
             visibility: visible !important;
             opacity: 1 !important;
             color: white !important;
+            text-align: center !important;
+            flex-shrink: 0;
         }
 
         .check-circle {
@@ -417,6 +422,8 @@
             background-color: rgba(0,0,0,0.5);
             display: inline-block;
             text-align: inherit;
+            width: auto !important;
+            max-width: 100% !important;
         }
 
         .info-title { 
@@ -424,6 +431,7 @@
             font-weight: 700; 
             text-transform: uppercase; 
             margin-bottom: 4px;
+            word-break: break-word;
         }
 
         .info-date, .info-address { 
@@ -431,6 +439,7 @@
             opacity: 0.95; 
             margin-bottom: 4px;
             line-height: 1.4;
+            word-break: break-word;
         }
 
         .settings-grid {
@@ -491,7 +500,7 @@
         <div class="settings-grid">
             <div class="input-group">
                 <label>Waktu (Jam:Menit)</label>
-                <input type="text" id="timeInput" value="21:57">
+                <input type="text" id="timeInput" value="21:50">
             </div>
             <div class="input-group">
                 <label>Posisi Stempel</label>
@@ -504,7 +513,6 @@
             </div>
         </div>
 
-        <!-- === SLIDER UKURAN STEMPEL === -->
         <div class="input-group">
             <label>Ukuran Stempel</label>
             <div class="slider-container">
@@ -569,7 +577,7 @@
 
             <div class="overlay stempel-wrapper bottom-left" id="stempel-container">
                 <div class="time-badge">
-                    <span id="out-time">21:57</span><span class="check-circle">✔</span>
+                    <span id="out-time">21:50</span><span class="check-circle">✔</span>
                 </div>
                 <div class="info-container">
                     <div class="info-title" id="out-title">CARY IN</div>
@@ -586,7 +594,7 @@
     let videoStreamTrack = null;
     let currentCameraMode = 'environment';
     const DEFAULT_VALUES = {
-        time: "21:57",
+        time: "21:50",
         title: "CARY IN",
         date: "Minggu, 5 Juli 2026 WITA",
         address1: "Pallantikang, Kec. Pattallassang, Kabupaten",
@@ -642,7 +650,6 @@
         Swal.fire({ icon: 'info', title: 'Kembali ke Nilai Default', timer: 1200, showConfirmButton: false });
     }
 
-    // === FUNGSI PERUBAH UKURAN STEMPEL ===
     function updateStempelSize() {
         const nilai = document.getElementById('stempelSize').value;
         document.documentElement.style.setProperty('--stempel-scale', nilai);
@@ -654,7 +661,6 @@
         if(savedTheme === 'light') toggleTheme();
         generateNewVerify();
         setupPositionControl();
-        // Pasang pemantau untuk slider ukuran
         document.getElementById('stempelSize').addEventListener('input', updateStempelSize);
     };
 
@@ -796,21 +802,34 @@
             scrollY: 0,
             allowTaint: true,
             logging: false,
+            imageTimeout: 0,
+            removeContainer: true,
             onclone: (clonedDoc) => {
-                const clonedElements = clonedDoc.querySelectorAll('.overlay, .time-badge, #out-time');
-                clonedElements.forEach(el => {
-                    el.style.visibility = 'visible';
-                    el.style.opacity = '1';
-                    el.style.display = 'block';
-                    el.style.color = 'white';
-                });
+                // Paksa semua aturan posisi dan skala diterapkan persis
+                const clonedStempel = clonedDoc.getElementById('stempel-container');
+                const clonedTimeBadge = clonedDoc.querySelector('.time-badge');
+                const clonedTime = clonedDoc.getElementById('out-time');
+                
+                clonedStempel.style.transform = `scale(${document.getElementById('stempelSize').value})`;
+                clonedStempel.style.transformOrigin = getComputedStyle(stempelContainer).transformOrigin;
+                clonedStempel.style.bottom = getComputedStyle(stempelContainer).bottom;
+                clonedStempel.style.top = getComputedStyle(stempelContainer).top;
+                clonedStempel.style.left = getComputedStyle(stempelContainer).left;
+                clonedStempel.style.right = getComputedStyle(stempelContainer).right;
+                
+                clonedTimeBadge.style.display = 'inline-flex';
+                clonedTimeBadge.style.alignItems = 'center';
+                clonedTimeBadge.style.justifyContent = 'flex-start';
+                clonedTime.style.display = 'inline-block';
+                clonedTime.style.visibility = 'visible';
+                clonedTime.style.opacity = '1';
             }
         }).then(canvas => {
             const link = document.createElement('a');
             link.download = namaFile;
             link.href = format === 'jpeg' ? canvas.toDataURL('image/jpeg', 0.92) : canvas.toDataURL('image/png');
             link.click();
-            Swal.fire({ icon: 'success', title: 'Berhasil Disimpan!', text: 'Cek galeri atau folder unduhan Anda.', confirmButtonColor: '#ff0000' });
+            Swal.fire({ icon: 'success', title: 'Berhasil Disimpan!', text: 'Posisi jam dan stempel sudah tetap tidak bergeser.', confirmButtonColor: '#ff0000' });
         }).catch(err => {
             Swal.fire({ icon: 'error', title: 'Gagal Menyimpan', text: 'Terjadi kesalahan: ' + err.message });
         });
