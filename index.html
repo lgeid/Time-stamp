@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Timemark Custom - Camera Support</title>
+    <title>Generator Timemark Custom - Real Camera Support</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         body {
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
@@ -41,103 +42,59 @@
         }
         button:hover { background-color: #cc0000; }
 
-        .btn-container {
-            width: 100%;
-            text-align: justify;
-        }
+        .btn-container { width: 100%; }
         .btn-half {
-            width: 48%;
-            display: inline-block;
-            margin-top: 0;
-            font-size: 14px;
-            padding: 10px;
+            width: 48%; display: inline-block; margin-top: 0; font-size: 14px; padding: 10px;
         }
         .btn-gallery { background-color: #444444; }
         .btn-gallery:hover { background-color: #555555; }
         .btn-camera { background-color: #007bff; }
         .btn-camera:hover { background-color: #0056b3; }
+        .btn-snap { background-color: #28a745; margin-top: 5px; display: none; }
+        .btn-snap:hover { background-color: #218838; }
+
+        /* Area Kamera Live Stream */
+        #camera-stream-container {
+            display: none; width: 100%; max-width: 100%; background: #000; 
+            border-radius: 8px; overflow: hidden; margin-bottom: 15px; position: relative;
+        }
+        #video-stream { width: 100%; height: auto; display: block; }
 
         /* Area Preview Gambar */
         .preview-wrapper {
             display: flex; justify-content: center; background: #000;
             border: 1px solid #444; border-radius: 8px; overflow: hidden;
         }
-        #canvas-container {
-            position: relative; display: inline-block; max-width: 100%;
-        }
-        #preview-img {
-            display: block; max-width: 100%; height: auto; object-fit: contain;
-        }
+        #canvas-container { position: relative; display: inline-block; max-width: 100%; }
+        #preview-img { display: block; max-width: 100%; height: auto; object-fit: contain; }
 
-        /* Gaya Teks Overlay */
-        .overlay {
-            position: absolute; color: white; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8); pointer-events: none;
-        }
-
-        /* Pojok Kanan Atas */
+        /* Gaya Teks Overlay Timemark */
+        .overlay { position: absolute; color: white; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8); pointer-events: none; }
         .top-right { top: 15px; right: 15px; text-align: right; }
         .top-right .logo-text { font-size: 18px; font-weight: bold; letter-spacing: 0.5px; }
         .logo-text .time-part { color: #f2c12e; } 
         .top-right .accuracy { font-size: 12px; opacity: 0.9; }
 
-        /* Sisi Kanan Vertikal */
         .right-edge {
-            right: 15px;
-            bottom: 50%; 
-            transform: rotate(-90deg);
-            transform-origin: right bottom;
-            font-size: 10px;
-            letter-spacing: 1px;
-            opacity: 0.7;
-            white-space: nowrap;
+            right: 15px; bottom: 50%; transform: rotate(-90deg); transform-origin: right bottom;
+            font-size: 10px; letter-spacing: 1px; opacity: 0.7; white-space: nowrap;
         }
 
-        /* Pojok Kiri Bawah */
         .bottom-left { bottom: 25px; left: 20px; }
-
-        /* Kotak Merah Waktu */
         .time-badge {
-            background-color: #ff0000;
-            color: white;
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 4px;
-            margin-bottom: 12px;
-            box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
-            line-height: 1; 
+            background-color: #ff0000; color: white; display: inline-block; padding: 4px 10px;
+            border-radius: 4px; margin-bottom: 12px; box-shadow: 1px 1px 4px rgba(0,0,0,0.5); line-height: 1; 
         }
-        
-        #out-time {
-            font-size: 28px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            text-shadow: none;
-            vertical-align: middle;
-        }
-
+        #out-time { font-size: 28px; font-weight: bold; letter-spacing: 1px; text-shadow: none; vertical-align: middle; }
         .check-circle {
-            background-color: white;
-            color: #ff0000;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            display: inline-block;
-            text-align: center;
-            line-height: 22px;
-            font-size: 14px;
-            font-weight: bold;
-            vertical-align: middle;
-            margin-left: 6px;
+            background-color: white; color: #ff0000; width: 22px; height: 22px; border-radius: 50%;
+            display: inline-block; text-align: center; line-height: 22px; font-size: 14px; font-weight: bold;
+            vertical-align: middle; margin-left: 6px;
         }
 
-        /* Kotak Informasi Garis Kuning */
-        .info-container {
-            border-left: 3px solid #f2c12e;
-            padding-left: 12px;
-        }
+        .info-container { border-left: 3px solid #f2c12e; padding-left: 12px; }
         .info-title { font-size: 20px; font-weight: bold; text-transform: uppercase; margin-bottom: 3px;}
         .info-date, .info-address { font-size: 14px; opacity: 0.95; margin-bottom: 3px;}
-
     </style>
 </head>
 <body>
@@ -147,26 +104,30 @@
 
     <div class="control-panel">
         <div class="input-group">
-            <label>Pilih Gambar / Ambil Foto</label>
+            <label>Sumber Foto</label>
             <div class="btn-container">
-                <button type="button" class="btn-half btn-gallery" onclick="document.getElementById('imageInput').click()">📁 Galeri / File</button>
-                <button type="button" class="btn-half btn-camera" style="float: right;" onclick="document.getElementById('cameraInput').click()">📷 Kamera HP</button>
+                <button type="button" class="btn-half btn-gallery" onclick="stopCamera(); document.getElementById('imageInput').click()">📁 Buka Galeri</button>
+                <button type="button" class="btn-half btn-camera" style="float: right;" onclick="startCamera()">📷 Aktifkan Kamera HP</button>
                 <div style="clear: both;"></div>
             </div>
             <input type="file" id="imageInput" accept="image/*" style="display: none;">
-            <input type="file" id="cameraInput" accept="image/*" capture="environment" style="display: none;">
+        </div>
+
+        <div id="camera-stream-container">
+            <video id="video-stream" autoplay playsinline></video>
+            <button type="button" class="btn-snap" id="snapBtn" onclick="takeSnapshot()">📸 JEPRET FOTO</button>
         </div>
 
         <div class="input-group">
-            <label>Waktu (Misal: 19:35)</label>
+            <label>Waktu (Jam:Menit)</label>
             <input type="text" id="timeInput" value="19:35">
         </div>
         <div class="input-group">
-            <label>Judul Kegiatan (Misal: CARY IN)</label>
+            <label>Judul Kegiatan</label>
             <input type="text" id="titleInput" value="CARY IN">
         </div>
         <div class="input-group">
-            <label>Tanggal & Waktu Zona (Misal: Minggu, 05 Juli 2026 WITA)</label>
+            <label>Tanggal & Zona Waktu</label>
             <input type="text" id="dateInput" value="Minggu, 05 Juli 2026 WITA">
         </div>
         <div class="input-group">
@@ -174,19 +135,19 @@
             <input type="text" id="address1Input" value="Pallantikang, Kec. Pattallassang, Kabupaten">
         </div>
         <div class="input-group">
-            <label>Alamat Baris 2 (Kota/Prov/Kode Pos)</label>
+            <label>Alamat Baris 2</label>
             <input type="text" id="address2Input" value="Gowa, Sulawesi Selatan 92173">
         </div>
         <div class="input-group">
             <label>Kode Verifikasi Kanan (Otomatis Acak)</label>
             <input type="text" id="verifyInput" value="">
         </div>
-        <button onclick="downloadImage()">Simpan Gambar</button>
+        <button onclick="downloadImage()">💾 Simpan Hasil Gambar</button>
     </div>
 
     <div class="preview-wrapper">
         <div id="canvas-container">
-            <img id="preview-img" src="https://via.placeholder.com/600x800/333333/555555?text=Pilih+Sumber+Foto+Di+Atas" alt="Preview">
+            <img id="preview-img" src="https://via.placeholder.com/600x800/333333/555555?text=Kamera+Aktif+Otomatis+Di+Bawah" alt="Preview">
             
             <div class="overlay top-right">
                 <div class="logo-text"><span class="time-part">Time</span>mark</div>
@@ -211,47 +172,107 @@
 </div>
 
 <script>
-    // FUNGSI KODE ACAK OTOMATIS
+    let videoStreamTrack = null;
+
     function generateRandomCode(length) {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         let result = '';
-        for (let i = 0; i < length; i++) {
-            result += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
+        for (let i = 0; i < length; i++) { result += chars.charAt(Math.floor(Math.random() * chars.length)); }
         return result;
     }
 
+    // Pemicu Awal saat Aplikasi dibuka
     window.onload = function() {
+        // 1. Set Kode Acak
         const randomStr = generateRandomCode(14) + ' Timemark Verified';
         document.getElementById('verifyInput').value = randomStr;
         document.getElementById('out-verify').innerText = '🛡️ ' + randomStr;
+
+        // 2. Langsung Minta Izin Kamera Aktif Saat Buka Aplikasi
+        startCamera(true);
     };
 
-    const imageInput = document.getElementById('imageInput');
-    const cameraInput = document.getElementById('cameraInput');
-    const previewImg = document.getElementById('preview-img');
+    // Fungsi Menyalakan Kamera Real-Time perangkat
+    function startCamera(isAutoLoad = false) {
+        const constraints = {
+            video: { facingMode: { exact: "environment" } } // Paksa kamera belakang HP
+        };
 
-    // Handler membaca file / hasil tangkapan kamera
-    function prosesGambar(e) {
+        navigator.mediaDevices.getUserMedia(constraints)
+            .then(function(stream) {
+                const video = document.getElementById('video-stream');
+                video.srcObject = stream;
+                videoStreamTrack = stream;
+                document.getElementById('camera-stream-container').style.display = 'block';
+                document.getElementById('snapBtn').style.display = 'block';
+                
+                if(!isAutoLoad) {
+                    Swal.fire({ icon: 'success', title: 'Kamera Aktif!', text: 'Kamera belakang berhasil dimuat.', timer: 1500, showConfirmButton: false });
+                }
+            })
+            .catch(function(err) {
+                // Jika gagal mendeteksi kamera belakang (misal di Laptop/PC), buka kamera default apa saja yang ada
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function(stream) {
+                        const video = document.getElementById('video-stream');
+                        video.srcObject = stream;
+                        videoStreamTrack = stream;
+                        document.getElementById('camera-stream-container').style.display = 'block';
+                        document.getElementById('snapBtn').style.display = 'block';
+                    })
+                    .catch(function(error) {
+                        if(!isAutoLoad) {
+                            Swal.fire({ icon: 'error', title: 'Gagal Akses Kamera', text: 'Pastikan memberikan izin kamera pada pengaturan APK.' });
+                        }
+                    });
+            });
+    }
+
+    // Fungsi Matikan Aliran Kamera jika beralih ke galeri
+    function stopCamera() {
+        if (videoStreamTrack) {
+            videoStreamTrack.getTracks().forEach(track => track.stop());
+            document.getElementById('camera-stream-container').style.display = 'none';
+        }
+    }
+
+    // Fungsi Menangkap / Jepret Gambar dari Live Video Kamera
+    function takeSnapshot() {
+        const video = document.getElementById('video-stream');
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        const dataURL = canvas.toDataURL('image/jpeg');
+        document.getElementById('preview-img').src = dataURL;
+        
+        // Matikan kamera setelah dijepret agar hemat baterai HP
+        stopCamera();
+
+        Swal.fire({ icon: 'success', title: 'Berhasil Dijepret!', text: 'Foto berhasil dimasukkan ke template timemark.', timer: 1800, showConfirmButton: false });
+    }
+
+    // Ambil Gambar dari file Galeri tradisional
+    document.getElementById('imageInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(event) {
-                previewImg.src = event.target.result;
+                document.getElementById('preview-img').src = event.target.result;
+                Swal.fire({ icon: 'success', title: 'Foto Dimuat!', text: 'Gambar dari galeri berhasil dipasang.', timer: 1500, showConfirmButton: false });
             }
             reader.readAsDataURL(file);
         }
-    }
-
-    imageInput.addEventListener('change', prosesGambar);
-    cameraInput.addEventListener('change', prosesGambar);
+    });
 
     function syncInput(inputId, outputId, prefix = "") {
         document.getElementById(inputId).addEventListener('input', function(e) {
             document.getElementById(outputId).innerText = prefix + e.target.value;
         });
     }
-
     syncInput('timeInput', 'out-time');
     syncInput('titleInput', 'out-title');
     syncInput('dateInput', 'out-date');
@@ -259,17 +280,23 @@
     syncInput('address2Input', 'out-address2');
     syncInput('verifyInput', 'out-verify', '🛡️ '); 
 
+    // Simpan Gambar dengan Alert Keren
     function downloadImage() {
+        Swal.fire({
+            title: 'Sedang memproses...',
+            text: 'Membuat watermark timemark jernih.',
+            allowOutsideClick: false,
+            didOpen: () => { Swal.showLoading(); }
+        });
+
         const container = document.getElementById('canvas-container');
-        
-        html2canvas(container, {
-            useCORS: true,
-            scale: 2
-        }).then(canvas => {
+        html2canvas(container, { useCORS: true, scale: 2 }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'timemark-camera.png';
+            link.download = 'timemark_verified_snapshot.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
+            
+            Swal.fire({ icon: 'success', title: 'Berhasil Disimpan!', text: 'Gambar timemark sudah tersimpan di folder unduhan perangkat.', confirmButtonColor: '#ff0000' });
         });
     }
 </script>
