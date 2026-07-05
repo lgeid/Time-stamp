@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Timemark Custom - Real Camera Support</title>
+    <title>Generator Timemark Custom - Bug Fixed</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
@@ -35,7 +35,6 @@
             background-color: #333; color: white; box-sizing: border-box; font-family: inherit;
         }
         
-        /* Gaya Tombol */
         button {
             width: 100%; padding: 12px; background-color: #ff0000; color: white;
             border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;
@@ -43,9 +42,7 @@
         button:hover { background-color: #cc0000; }
 
         .btn-container { width: 100%; }
-        .btn-half {
-            width: 48%; display: inline-block; margin-top: 0; font-size: 14px; padding: 10px;
-        }
+        .btn-half { width: 48%; display: inline-block; margin-top: 0; font-size: 14px; padding: 10px; }
         .btn-gallery { background-color: #444444; }
         .btn-gallery:hover { background-color: #555555; }
         .btn-camera { background-color: #007bff; }
@@ -53,14 +50,12 @@
         .btn-snap { background-color: #28a745; margin-top: 5px; display: none; }
         .btn-snap:hover { background-color: #218838; }
 
-        /* Area Kamera Live Stream */
         #camera-stream-container {
             display: none; width: 100%; max-width: 100%; background: #000; 
             border-radius: 8px; overflow: hidden; margin-bottom: 15px; position: relative;
         }
         #video-stream { width: 100%; height: auto; display: block; }
 
-        /* Area Preview Gambar */
         .preview-wrapper {
             display: flex; justify-content: center; background: #000;
             border: 1px solid #444; border-radius: 8px; overflow: hidden;
@@ -68,28 +63,61 @@
         #canvas-container { position: relative; display: inline-block; max-width: 100%; }
         #preview-img { display: block; max-width: 100%; height: auto; object-fit: contain; }
 
-        /* Gaya Teks Overlay Timemark */
         .overlay { position: absolute; color: white; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8); pointer-events: none; }
         .top-right { top: 15px; right: 15px; text-align: right; }
         .top-right .logo-text { font-size: 18px; font-weight: bold; letter-spacing: 0.5px; }
         .logo-text .time-part { color: #f2c12e; } 
         .top-right .accuracy { font-size: 12px; opacity: 0.9; }
 
+        /* Sisi Kanan Vertikal - DIKUNCI PAKAI PIXEL AGAR TIDAK TURUN */
         .right-edge {
-            right: 15px; bottom: 50%; transform: rotate(-90deg); transform-origin: right bottom;
-            font-size: 10px; letter-spacing: 1px; opacity: 0.7; white-space: nowrap;
+            right: 15px; 
+            bottom: 250px; /* Fix tinggi dari bawah */
+            transform: rotate(-90deg); 
+            transform-origin: right bottom;
+            font-size: 10px; 
+            letter-spacing: 1px; 
+            opacity: 0.7; 
+            white-space: nowrap;
         }
 
         .bottom-left { bottom: 25px; left: 20px; }
+
+        /* Kotak Merah Waktu - DIKUNCI TINGGINYA AGAR TIDAK MELAR */
         .time-badge {
-            background-color: #ff0000; color: white; display: inline-block; padding: 4px 10px;
-            border-radius: 4px; margin-bottom: 12px; box-shadow: 1px 1px 4px rgba(0,0,0,0.5); line-height: 1; 
+            background-color: #ff0000; 
+            color: white; 
+            display: inline-block; 
+            height: 38px; /* Dikunci tinggi absolutnya */
+            padding: 0 10px;
+            border-radius: 4px; 
+            margin-bottom: 12px; 
+            box-shadow: 1px 1px 4px rgba(0,0,0,0.5); 
+            white-space: nowrap; 
+            box-sizing: border-box;
         }
-        #out-time { font-size: 28px; font-weight: bold; letter-spacing: 1px; text-shadow: none; vertical-align: middle; }
+        #out-time { 
+            font-size: 28px; 
+            font-weight: bold; 
+            letter-spacing: 1px; 
+            line-height: 38px; /* Disamakan dengan tinggi kotak */
+            display: inline-block; 
+            vertical-align: top; 
+        }
         .check-circle {
-            background-color: white; color: #ff0000; width: 22px; height: 22px; border-radius: 50%;
-            display: inline-block; text-align: center; line-height: 22px; font-size: 14px; font-weight: bold;
-            vertical-align: middle; margin-left: 6px;
+            background-color: white; 
+            color: #ff0000; 
+            width: 22px; 
+            height: 22px; 
+            border-radius: 50%;
+            display: inline-block; 
+            text-align: center; 
+            line-height: 22px; 
+            font-size: 14px; 
+            font-weight: bold;
+            vertical-align: top; 
+            margin-top: 8px; /* Diposisikan tengah secara manual */
+            margin-left: 6px;
         }
 
         .info-container { border-left: 3px solid #f2c12e; padding-left: 12px; }
@@ -100,7 +128,7 @@
 <body>
 
 <div class="app-container">
-    <h2>Shanted™ Timemark</h2>
+    <h2>Generator Timemark</h2>
 
     <div class="control-panel">
         <div class="input-group">
@@ -124,7 +152,7 @@
         </div>
         <div class="input-group">
             <label>Judul Kegiatan</label>
-            <input type="text" id="titleInput" value="CARY IN IN704500">
+            <input type="text" id="titleInput" value="CARY IN">
         </div>
         <div class="input-group">
             <label>Tanggal & Zona Waktu</label>
@@ -139,7 +167,7 @@
             <input type="text" id="address2Input" value="Gowa, Sulawesi Selatan 92173">
         </div>
         <div class="input-group">
-            <label>Kode Verifikasi Kanan (Otomatis Acak)</label>
+            <label>Kode Verifikasi Kanan</label>
             <input type="text" id="verifyInput" value="">
         </div>
         <button onclick="downloadImage()">💾 Simpan Hasil Gambar</button>
@@ -158,7 +186,7 @@
 
             <div class="overlay bottom-left">
                 <div class="time-badge">
-                    <span id="out-time">19:35</span><div class="check-circle">✔</div>
+                    <span id="out-time">19:35</span><span class="check-circle">✔</span>
                 </div>
                 <div class="info-container">
                     <div class="info-title" id="out-title">CARY IN</div>
@@ -181,22 +209,15 @@
         return result;
     }
 
-    // Pemicu Awal saat Aplikasi dibuka
     window.onload = function() {
-        // 1. Set Kode Acak
         const randomStr = generateRandomCode(14) + ' Timemark Verified';
         document.getElementById('verifyInput').value = randomStr;
         document.getElementById('out-verify').innerText = '🛡️ ' + randomStr;
-
-        // 2. Langsung Minta Izin Kamera Aktif Saat Buka Aplikasi
         startCamera(true);
     };
 
-    // Fungsi Menyalakan Kamera Real-Time perangkat
     function startCamera(isAutoLoad = false) {
-        const constraints = {
-            video: { facingMode: { exact: "environment" } } // Paksa kamera belakang HP
-        };
+        const constraints = { video: { facingMode: { exact: "environment" } } };
 
         navigator.mediaDevices.getUserMedia(constraints)
             .then(function(stream) {
@@ -205,13 +226,9 @@
                 videoStreamTrack = stream;
                 document.getElementById('camera-stream-container').style.display = 'block';
                 document.getElementById('snapBtn').style.display = 'block';
-                
-                if(!isAutoLoad) {
-                    Swal.fire({ icon: 'success', title: 'Kamera Aktif!', text: 'Kamera belakang berhasil dimuat.', timer: 1500, showConfirmButton: false });
-                }
+                if(!isAutoLoad) Swal.fire({ icon: 'success', title: 'Kamera Aktif!', timer: 1500, showConfirmButton: false });
             })
             .catch(function(err) {
-                // Jika gagal mendeteksi kamera belakang (misal di Laptop/PC), buka kamera default apa saja yang ada
                 navigator.mediaDevices.getUserMedia({ video: true })
                     .then(function(stream) {
                         const video = document.getElementById('video-stream');
@@ -221,14 +238,11 @@
                         document.getElementById('snapBtn').style.display = 'block';
                     })
                     .catch(function(error) {
-                        if(!isAutoLoad) {
-                            Swal.fire({ icon: 'error', title: 'Gagal Akses Kamera', text: 'Pastikan memberikan izin kamera pada pengaturan APK.' });
-                        }
+                        if(!isAutoLoad) Swal.fire({ icon: 'error', title: 'Gagal Akses Kamera', text: 'Pastikan memberikan izin kamera pada setelan HP.' });
                     });
             });
     }
 
-    // Fungsi Matikan Aliran Kamera jika beralih ke galeri
     function stopCamera() {
         if (videoStreamTrack) {
             videoStreamTrack.getTracks().forEach(track => track.stop());
@@ -236,33 +250,26 @@
         }
     }
 
-    // Fungsi Menangkap / Jepret Gambar dari Live Video Kamera
     function takeSnapshot() {
         const video = document.getElementById('video-stream');
         const canvas = document.createElement('canvas');
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-        
         const ctx = canvas.getContext('2d');
         ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
         
-        const dataURL = canvas.toDataURL('image/jpeg');
-        document.getElementById('preview-img').src = dataURL;
-        
-        // Matikan kamera setelah dijepret agar hemat baterai HP
+        document.getElementById('preview-img').src = canvas.toDataURL('image/jpeg');
         stopCamera();
-
-        Swal.fire({ icon: 'success', title: 'Berhasil Dijepret!', text: 'Foto berhasil dimasukkan ke template timemark.', timer: 1800, showConfirmButton: false });
+        Swal.fire({ icon: 'success', title: 'Berhasil Dijepret!', timer: 1500, showConfirmButton: false });
     }
 
-    // Ambil Gambar dari file Galeri tradisional
     document.getElementById('imageInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(event) {
                 document.getElementById('preview-img').src = event.target.result;
-                Swal.fire({ icon: 'success', title: 'Foto Dimuat!', text: 'Gambar dari galeri berhasil dipasang.', timer: 1500, showConfirmButton: false });
+                Swal.fire({ icon: 'success', title: 'Foto Dimuat!', timer: 1500, showConfirmButton: false });
             }
             reader.readAsDataURL(file);
         }
@@ -280,23 +287,23 @@
     syncInput('address2Input', 'out-address2');
     syncInput('verifyInput', 'out-verify', '🛡️ '); 
 
-    // Simpan Gambar dengan Alert Keren
     function downloadImage() {
-        Swal.fire({
-            title: 'Sedang memproses...',
-            text: 'Membuat watermark timemark jernih.',
-            allowOutsideClick: false,
-            didOpen: () => { Swal.showLoading(); }
-        });
+        Swal.fire({ title: 'Sedang memproses...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
 
         const container = document.getElementById('canvas-container');
-        html2canvas(container, { useCORS: true, scale: 2 }).then(canvas => {
+        
+        // Penambahan konfigurasi scrollY untuk menstabilkan tangkapan layar
+        html2canvas(container, { 
+            useCORS: true, 
+            scale: 2,
+            scrollY: -window.scrollY
+        }).then(canvas => {
             const link = document.createElement('a');
             link.download = 'timemark_verified_snapshot.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
             
-            Swal.fire({ icon: 'success', title: 'Berhasil Disimpan!', text: 'Gambar timemark sudah tersimpan di folder unduhan perangkat.', confirmButtonColor: '#ff0000' });
+            Swal.fire({ icon: 'success', title: 'Berhasil Disimpan!', text: 'Cek galeri/folder unduhan kamu.', confirmButtonColor: '#ff0000' });
         });
     }
 </script>
