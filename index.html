@@ -211,15 +211,52 @@
             background-color: #7B22A6; 
         }
 
-        .btn-snap { 
-            background-color: var(--success); 
-            margin-top: 10px; 
-            display: none; 
-            font-size: 17px;
-            padding: 15px;
+        /* === TOMBOL JEPRET BULAT BESAR MUDAH DITEKAN === */
+        .snap-btn-wrapper {
+            display: none;
+            justify-content: center;
+            padding: 25px 0;
+            background: rgba(0,0,0,0.7);
+            border-radius: 0 0 8px 8px;
+            margin-top: -4px;
+            position: relative;
+            z-index: 10;
         }
-        .btn-snap:hover { 
-            background-color: var(--success-hover); 
+        .snap-btn-wrapper.show {
+            display: flex;
+        }
+        .btn-snap {
+            width: 72px;
+            height: 72px;
+            border: 5px solid #ffffff;
+            border-radius: 50%;
+            background: var(--success);
+            color: white;
+            font-size: 0;
+            padding: 0;
+            margin: 0;
+            box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.3);
+            transition: all 0.15s ease;
+            position: relative;
+        }
+        .btn-snap::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 4px;
+        }
+        .btn-snap:hover {
+            transform: scale(1.05);
+            background: var(--success-hover);
+        }
+        .btn-snap:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.3);
         }
 
         .btn-secondary {
@@ -292,12 +329,14 @@
         .overlay { 
             position: absolute; 
             color: white; 
-            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9); 
+            /* === HAPUS BAYANGAN HITAM YANG TERLALU TEBAL === */
+            text-shadow: none !important; 
             pointer-events: none; 
             font-family: inherit;
             visibility: visible !important;
             opacity: 1 !important;
             display: block !important;
+            font-weight: 700 !important;
         }
 
         .top-right { 
@@ -432,37 +471,40 @@
             color: var(--primary) !important;
         }
 
-        /* === PERBAIKAN JARAK TEKS AGAR TIDAK TUMPANG TINDIH === */
+        /* === HAPUS LATAR BELAKANG GELAP & SESUAI CONTOH GAMBAR 2 === */
         .info-container { 
-            border-left: 5px solid var(--accent) !important; 
-            padding: 10px 14px !important;
-            border-radius: 0 8px 8px 0 !important;
-            backdrop-filter: blur(4px);
-            background-color: rgba(0,0,0,0.6) !important;
-            display: inline-block !important;
+            border-left: none !important; 
+            padding: 0 !important;
+            border-radius: 0 !important;
+            backdrop-filter: none !important;
+            /* === HAPUS LATAR BELAKANG HITAM === */
+            background-color: transparent !important;
+            display: block !important;
             text-align: left !important;
             width: auto !important;
             max-width: 100% !important;
-            margin-top: 4px !important;
+            margin-top: 8px !important;
         }
 
         .info-title { 
             font-size: 24px !important; 
-            font-weight: 700 !important; 
+            font-weight: 800 !important; 
             text-transform: uppercase !important; 
-            margin-bottom: 8px !important;
+            margin-bottom: 6px !important;
             word-break: break-word !important;
             line-height: 1.2 !important;
-            color: rgba(255,255,255,0.9) !important;
+            color: #ffffff !important;
+            opacity: 1 !important;
         }
 
         .info-date, .info-address { 
             font-size: 16px !important; 
             opacity: 1 !important; 
-            margin-bottom: 6px !important;
+            margin-bottom: 4px !important;
             line-height: 1.4 !important;
             word-break: break-word !important;
-            color: white !important;
+            color: #ffffff !important;
+            font-weight: 600 !important;
             display: block !important;
         }
         .info-address:last-child {
@@ -495,6 +537,7 @@
             .stempel-wrapper { max-width: 90%; }
             .time-badge { min-height: 44px; padding: 6px 14px; gap: 10px; }
             .check-circle { width: 24px; height: 24px; font-size: 16px; }
+            .btn-snap { width: 64px; height: 64px; }
         }
     </style>
 </head>
@@ -520,9 +563,12 @@
 
         <div id="camera-stream-container">
             <video id="video-stream" autoplay playsinline muted></video>
-            <div class="btn-group-row">
+            <div class="btn-group-row" style="padding: 12px;">
                 <button type="button" class="btn-switch" id="switchCamBtn" onclick="switchCamera()">🔄 Ganti Kamera</button>
-                <button type="button" class="btn-snap" id="snapBtn" onclick="takeSnapshot()">📸 JEPRET FOTO</button>
+            </div>
+            <!-- TOMBOL JEPRET BULAT DI BAWAH KAMERA -->
+            <div class="snap-btn-wrapper" id="snapBtnWrapper">
+                <button type="button" class="btn-snap" id="snapBtn" onclick="takeSnapshot()"></button>
             </div>
         </div>
 
@@ -705,6 +751,7 @@
     async function startCamera() {
         stopCamera();
         const video = document.getElementById('video-stream');
+        const snapWrapper = document.getElementById('snapBtnWrapper');
         const constraints = { 
             video: { 
                 facingMode: currentCameraMode,
@@ -727,7 +774,7 @@
             }
 
             document.getElementById('camera-stream-container').style.display = 'block';
-            document.getElementById('snapBtn').style.display = 'block';
+            snapWrapper.classList.add('show');
             Swal.fire({ icon: 'success', title: `Kamera ${currentCameraMode === 'user' ? 'Depan' : 'Belakang'} Aktif!`, timer: 1500, showConfirmButton: false });
         } catch (err) {
             Swal.fire({ 
@@ -745,10 +792,11 @@
     }
 
     function stopCamera() {
+        const snapWrapper = document.getElementById('snapBtnWrapper');
         if (videoStreamTrack) {
             videoStreamTrack.getTracks().forEach(track => track.stop());
             document.getElementById('camera-stream-container').style.display = 'none';
-            document.getElementById('snapBtn').style.display = 'none';
+            snapWrapper.classList.remove('show');
             videoStreamTrack = null;
         }
     }
@@ -821,7 +869,6 @@
             didOpen: () => { Swal.showLoading(); } 
         });
 
-        // HAPUS SEMUA KODE YANG MENYEBUTKAN "stempelContainer"
         const container = document.getElementById('canvas-container');
         const format = document.getElementById('formatSelect').value;
         const namaFile = `shanted_timemark_${new Date().toISOString().slice(0,10)}.${format}`;
@@ -836,14 +883,15 @@
             imageTimeout: 0,
             removeContainer: false,
             onclone: (clonedDoc) => {
-                // Hanya ambil elemen dengan ID yang BENAR
                 const clonedStempel = clonedDoc.getElementById('stempel-container');
                 const clonedTimeBadge = clonedDoc.querySelector('.time-badge');
                 const clonedTime = clonedDoc.getElementById('out-time');
                 const clonedCheck = clonedDoc.querySelector('.check-circle');
                 const clonedInfo = clonedDoc.querySelector('.info-container');
+                const clonedTitle = clonedDoc.querySelector('.info-title');
+                const clonedText = clonedDoc.querySelectorAll('.info-date, .info-address');
                 
-                // Kunci posisi dan gaya
+                // Kunci tampilan tanpa latar belakang & bayangan
                 clonedStempel.style.transform = `scale(${document.getElementById('stempelSize').value})`;
                 clonedStempel.style.transformOrigin = getComputedStyle(clonedStempel).transformOrigin;
                 clonedStempel.style.bottom = getComputedStyle(clonedStempel).bottom;
@@ -851,6 +899,20 @@
                 clonedStempel.style.left = getComputedStyle(clonedStempel).left;
                 clonedStempel.style.right = getComputedStyle(clonedStempel).right;
                 clonedStempel.style.lineHeight = '1.5';
+                
+                clonedInfo.style.background = 'transparent';
+                clonedInfo.style.padding = '0';
+                clonedInfo.style.border = 'none';
+                
+                clonedTitle.style.color = '#ffffff';
+                clonedTitle.style.fontWeight = '800';
+                clonedTitle.style.textShadow = 'none';
+                
+                clonedText.forEach(el => {
+                    el.style.color = '#ffffff';
+                    el.style.fontWeight = '600';
+                    el.style.textShadow = 'none';
+                });
                 
                 clonedTimeBadge.style.display = 'inline-flex';
                 clonedTimeBadge.style.flexDirection = 'row';
@@ -869,16 +931,13 @@
                 clonedCheck.style.fontSize = '18px';
                 clonedCheck.style.background = 'white';
                 clonedCheck.style.color = 'var(--primary)';
-                
-                clonedInfo.style.marginTop = '4px';
-                clonedInfo.style.padding = '10px 14px';
             }
         }).then(canvas => {
             const link = document.createElement('a');
             link.download = namaFile;
             link.href = format === 'jpeg' ? canvas.toDataURL('image/jpeg', 0.92) : canvas.toDataURL('image/png');
             link.click();
-            Swal.fire({ icon: 'success', title: 'Berhasil Disimpan!', text: 'Centang rapi, teks tidak berhimpit lagi.', confirmButtonColor: '#ff0000' });
+            Swal.fire({ icon: 'success', title: 'Berhasil Disimpan!', text: 'Tulisan putih jelas tanpa latar belakang gelap.', confirmButtonColor: '#ff0000' });
         }).catch(err => {
             Swal.fire({ icon: 'error', title: 'Gagal Menyimpan', text: 'Terjadi kesalahan: ' + err.message });
         });
