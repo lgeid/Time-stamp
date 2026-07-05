@@ -1,163 +1,551 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Timemark Stempel - Perbaiki Kualitas Simpan</title>
-<style>
-  *{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
-  body{padding:15px;background:#f5f5f5}
-  .container{max-width:600px;margin:0 auto;background:#fff;border-radius:10px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
-  h2{text-align:center;margin-bottom:20px;color:#333}
-  #canvas{display:none}
-  .preview-area{width:100%;margin:15px 0;border:2px dashed #ccc;border-radius:8px;overflow:hidden;background:#fff}
-  #previewImg{width:100%;height:auto;display:block}
-  .controls{margin:20px 0;display:grid;gap:12px}
-  label{font-weight:bold;color:#444}
-  input,select,button{padding:10px;border:1px solid #ddd;border-radius:6px;font-size:15px}
-  button{background:#2563eb;color:#fff;border:none;cursor:pointer;font-weight:bold;transition:0.2s}
-  button:hover{background:#1d4ed8}
-  .btn-simpan{background:#16a34a;margin-top:10px}
-  .btn-simpan:hover{background:#15803d}
-  .info{margin-top:15px;padding:10px;background:#eef2ff;border-radius:6px;font-size:14px;color:#374151}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shanted™ Timemark - Versi Stabil</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --bg-main: #1e1e1e;
+            --bg-panel: #2a2a2a;
+            --bg-input: #333;
+            --text-main: #ffffff;
+            --text-muted: #cccccc;
+            --border-color: #444;
+            --primary: #ff0000;
+            --primary-hover: #cc0000;
+            --secondary: #007bff;
+            --success: #28a745;
+            --accent: #f2c12e;
+            --stempel-scale: 1;
+        }
+
+        .light-mode {
+            --bg-main: #f5f5f5;
+            --bg-panel: #ffffff;
+            --bg-input: #f0f0f0;
+            --text-main: #222222;
+            --text-muted: #555555;
+            --border-color: #dddddd;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            padding: 15px;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            max-width: 850px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        h2 { 
+            text-align: center; 
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .control-panel {
+            background: var(--bg-panel);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .toggle-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .input-group { margin-bottom: 15px; }
+        .input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-input);
+            color: var(--text-main);
+            font-size: 15px;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+        }
+        .slider-value {
+            min-width: 50px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .btn-half {
+            flex: 1 1 calc(50% - 5px);
+            padding: 11px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-gallery { background: #555; color: white; }
+        .btn-camera { background: var(--secondary); color: white; }
+        .btn-switch { background: #9932CC; color: white; }
+        .btn-main {
+            width: 100%;
+            padding: 13px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .btn-secondary {
+            flex: 1;
+            min-width: 120px;
+            padding: 11px;
+            background: #444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        #camera-stream-container {
+            display: none;
+            width: 100%;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        #video-stream { width: 100%; display: block; }
+        .snap-btn-wrapper {
+            display: none;
+            justify-content: center;
+            padding: 25px 0;
+            background: rgba(0,0,0,0.7);
+        }
+        .snap-btn-wrapper.show { display: flex; }
+        .btn-snap {
+            width: 72px;
+            height: 72px;
+            border: 5px solid #fff;
+            border-radius: 50%;
+            background: var(--success);
+            cursor: pointer;
+            position: relative;
+        }
+        .btn-snap::after {
+            content: "";
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px; height: 24px;
+            background: white;
+            border-radius: 4px;
+        }
+
+        .preview-wrapper {
+            display: flex;
+            justify-content: center;
+            background: #000;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            padding: 10px;
+        }
+        #canvas-container {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+            background: #fff;
+        }
+        #preview-img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* === STIL STEMPEL DIKUNCI TOTAL TIDAK AKAN BERUBAH SAAT DISIMPAN === */
+        .stempel-wrapper {
+            position: absolute;
+            bottom: 30px;
+            left: 20px;
+            color: white;
+            line-height: 1.3;
+            transform: scale(var(--stempel-scale));
+            transform-origin: bottom left;
+            width: auto !important;
+            height: auto !important;
+            max-width: 90% !important;
+        }
+
+        .time-badge {
+            display: flex !important;
+            align-items: flex-start !important;
+            background: var(--primary) !important;
+            padding: 10px 18px !important;
+            border-radius: 8px !important;
+            margin-bottom: 12px !important;
+            position: relative !important;
+            width: fit-content !important;
+        }
+        .time-dot {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+        }
+        #out-time {
+            font-size: 40px !important;
+            font-weight: 900 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            line-height: 1 !important;
+        }
+
+        .stempel-text {
+            font-size: 22px !important;
+            font-weight: 800 !important;
+            text-transform: uppercase !important;
+            margin-bottom: 8px !important;
+            padding: 0 !important;
+            color: white !important;
+            display: block !important;
+        }
+        .stempel-desc {
+            font-size: 17px !important;
+            font-weight: 600 !important;
+            margin-bottom: 4px !important;
+            padding: 0 !important;
+            color: white !important;
+            display: block !important;
+            line-height: 1.4 !important;
+        }
+
+        .top-watermark {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            text-align: right;
+            color: white;
+        }
+        .top-watermark .brand {
+            font-size: 24px;
+            font-weight: 900;
+        }
+        .top-watermark .brand span { color: var(--accent); }
+        .top-watermark .tag {
+            font-size: 15px;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 480px) {
+            #out-time { font-size: 32px; }
+            .stempel-text { font-size: 19px; }
+            .stempel-desc { font-size: 15px; }
+            .btn-snap { width: 64px; height: 64px; }
+        }
+    </style>
 </head>
 <body>
 
-<div class="container">
-  <h2>📸 Stempel Foto Timemark (Perbaikan Kualitas)</h2>
+<div class="app-container">
+    <h2>📸 Shanted™ Timemark - Versi Stabil</h2>
 
-  <div class="preview-area">
-    <img id="previewImg" alt="Pratinjau Foto">
-  </div>
+    <div class="control-panel">
+        <div class="panel-header">
+            <h3>Pengaturan Stempel</h3>
+            <button class="toggle-btn" onclick="toggleTheme()">🌙 / ☀️ Mode</button>
+        </div>
 
-  <input type="file" id="fileInput" accept="image/*">
+        <div class="input-group">
+            <label>Sumber Foto</label>
+            <div class="btn-container">
+                <button class="btn-half btn-gallery" onclick="stopCamera(); document.getElementById('imageInput').click()">📁 Buka Galeri</button>
+                <button class="btn-half btn-camera" onclick="startCamera()">📷 Aktifkan Kamera</button>
+            </div>
+            <input type="file" id="imageInput" accept="image/*" style="display:none;">
+        </div>
 
-  <div class="controls">
-    <label>Tanggal & Waktu:</label>
-    <input type="text" id="txtWaktu" value="Minggu, 5 Jul 2026 23.30 WITA">
+        <div id="camera-stream-container">
+            <video id="video-stream" autoplay playsinline muted></video>
+            <div class="btn-container" style="padding:12px;">
+                <button class="btn-switch" onclick="switchCamera()">🔄 Ganti Kamera</button>
+            </div>
+            <div class="snap-btn-wrapper" id="snapWrapper">
+                <button class="btn-snap" onclick="takeSnapshot()"></button>
+            </div>
+        </div>
 
-    <label>Lokasi:</label>
-    <input type="text" id="txtLokasi" value="Pallantikang, Kec. Pattallassang, Kab. Gowa, Sulawesi Selatan 92173">
+        <div class="input-group">
+            <label>Ukuran Stempel</label>
+            <div class="slider-container">
+                <span>🔍 Kecil</span>
+                <input type="range" id="scaleSlider" min="0.7" max="1.3" step="0.05" value="1">
+                <span>Besar 🔍</span>
+            </div>
+            <div style="text-align:center; font-size:13px; color:var(--text-muted);">Skala: <span id="scaleVal">100%</span></div>
+        </div>
 
-    <label>Posisi Stempel:</label>
-    <select id="posisiStempel">
-      <option value="bawah">Bawah Kiri</option>
-      <option value="atas">Atas Kiri</option>
-      <option value="bawah_kanan">Bawah Kanan</option>
-      <option value="atas_kanan">Atas Kanan</option>
-    </select>
+        <div class="input-group">
+            <label>Waktu</label>
+            <input type="text" id="timeInput" value="21:50">
+        </div>
+        <div class="input-group">
+            <label>Judul</label>
+            <input type="text" id="titleInput" value="CARYN">
+        </div>
+        <div class="input-group">
+            <label>Tanggal & Lokasi</label>
+            <input type="text" id="desc1Input" value="Minggu, 5 Juli 2026 WITA">
+            <input type="text" id="desc2Input" value="Pallantikang, Kec. Pattallassang">
+            <input type="text" id="desc3Input" value="Kabupaten Gowa, Sulawesi Selatan 92173">
+        </div>
 
-    <label>Ukuran Teks Stempel:</label>
-    <input type="range" id="ukuranTeks" min="12" max="40" value="22">
+        <div class="btn-container">
+            <button class="btn-secondary" onclick="isiWaktuSekarang()">🕒 Waktu Sekarang</button>
+            <button class="btn-secondary" onclick="resetDefault()">🔄 Reset</button>
+        </div>
+        <button class="btn-main" onclick="simpanGambar()">💾 Simpan Foto</button>
+    </div>
 
-    <button onclick="prosesStempel()">🔄 Terapkan Stempel</button>
-    <button class="btn-simpan" onclick="simpanFoto()">💾 Simpan Foto Hasil</button>
-  </div>
+    <div class="preview-wrapper">
+        <div id="canvas-container">
+            <img id="preview-img" src="https://via.placeholder.com/720x960/ffffff/333?text=Pratinjau+Foto" alt="Pratinjau">
 
-  <div class="info">
-    ✅ Perbaikan diterapkan: <br>
-    • Stempel tidak bergeser/kacau saat disimpan <br>
-    • Teks lebih tebal & jelas <br>
-    • Kualitas gambar tetap tinggi <br>
-    • Posisi sesuai pengaturan
-  </div>
+            <div class="top-watermark">
+                <div class="brand"><span>Shanted™</span> Timemark</div>
+                <div class="tag">Foto 100% akurat</div>
+            </div>
+
+            <div class="stempel-wrapper" id="stempelBox">
+                <div class="time-badge">
+                    <span id="out-time">21:50</span>
+                    <span class="time-dot"></span>
+                </div>
+                <div class="stempel-text" id="out-title">CARYN</div>
+                <div class="stempel-desc" id="out-desc1">Minggu, 5 Juli 2026 WITA</div>
+                <div class="stempel-desc" id="out-desc2">Pallantikang, Kec. Pattallassang</div>
+                <div class="stempel-desc" id="out-desc3">Kabupaten Gowa, Sulawesi Selatan 92173</div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<canvas id="canvas"></canvas>
-
 <script>
-const fileInput = document.getElementById('fileInput');
-const previewImg = document.getElementById('previewImg');
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+let videoTrack = null;
+let modeKamera = 'environment';
 
-let fotoAsli = new Image();
-
-// Muat foto dari file
-fileInput.addEventListener('change', (e) => {
-  const reader = new FileReader();
-  reader.onload = (event) => {
-    fotoAsli.onload = () => {
-      previewImg.src = event.target.result;
-      previewImg.style.display = 'block';
-    }
-    fotoAsli.src = event.target.result;
-  }
-  reader.readAsDataURL(e.target.files[0]);
+// Sinkronisasi input & tampilan
+['time','title','desc1','desc2','desc3'].forEach(id => {
+    const input = document.getElementById(`${id}Input`);
+    const out = document.getElementById(`out-${id}`);
+    if(input && out) input.addEventListener('input', e => out.innerText = e.target.value);
 });
 
-// Fungsi terapkan stempel (TIDAK KACAU)
-function prosesStempel() {
-  if(!fotoAsli.src) return alert('Pilih foto terlebih dahulu!');
+// Ukuran stempel
+document.getElementById('scaleSlider').addEventListener('input', e => {
+    const val = e.target.value;
+    document.documentElement.style.setProperty('--stempel-scale', val);
+    document.getElementById('scaleVal').innerText = Math.round(val*100)+'%';
+});
 
-  // Sesuaikan ukuran canvas dengan resolusi ASLI foto (tidak pecah)
-  canvas.width = fotoAsli.naturalWidth;
-  canvas.height = fotoAsli.naturalHeight;
+// Mode gelap/terang
+function toggleTheme() {
+    document.body.classList.toggle('light-mode');
+    localStorage.setItem('theme', document.body.classList.contains('light-mode')?'light':'dark');
+}
+if(localStorage.getItem('theme')==='light') toggleTheme();
 
-  // Gambar foto asli
-  ctx.drawImage(fotoAsli, 0, 0, canvas.width, canvas.height);
-
-  // Pengaturan teks stempel
-  const waktu = document.getElementById('txtWaktu').value;
-  const lokasi = document.getElementById('txtLokasi').value;
-  const ukuran = document.getElementById('ukuranTeks').value;
-  const posisi = document.getElementById('posisiStempel').value;
-
-  // Gaya teks: tebal, jelas, latar belakang transparan gelap
-  ctx.font = `bold ${ukuran}px Arial, sans-serif`;
-  ctx.fillStyle = 'rgba(255,255,255,0.95)';
-  ctx.strokeStyle = 'rgba(0,0,0,0.7)';
-  ctx.lineWidth = ukuran / 8; // Ketebalan garis tepi agar terbaca di latar terang/gelap
-
-  // Hitung posisi
-  const padding = ukuran * 1.2;
-  let x, y;
-
-  switch(posisi) {
-    case 'atas':
-      x = padding;
-      y = padding + Number(ukuran);
-      break;
-    case 'bawah_kanan':
-      x = canvas.width - ctx.measureText(waktu).width - padding;
-      y = canvas.height - padding * 2;
-      break;
-    case 'atas_kanan':
-      x = canvas.width - ctx.measureText(waktu).width - padding;
-      y = padding + Number(ukuran);
-      break;
-    default: // bawah kiri
-      x = padding;
-      y = canvas.height - padding * 2;
-  }
-
-  // Gambar latar belakang kecil agar teks lebih jelas
-  const tinggiBlok = Number(ukuran) * 2.5;
-  const lebarBlok = Math.max(ctx.measureText(waktu).width, ctx.measureText(lokasi).width) + padding * 2;
-  ctx.fillStyle = 'rgba(0,0,0,0.4)';
-  ctx.fillRect(x - padding, y - Number(ukuran), lebarBlok, tinggiBlok);
-
-  // Tulis teks stempel
-  ctx.fillStyle = '#fff';
-  ctx.strokeText(waktu, x, y);
-  ctx.fillText(waktu, x, y);
-  ctx.strokeText(lokasi, x, y + Number(ukuran) * 1.3);
-  ctx.fillText(lokasi, x, y + Number(ukuran) * 1.3);
-
-  // Tampilkan hasil di pratinjau
-  previewImg.src = canvas.toDataURL('image/jpeg', 0.95);
+// Isi waktu otomatis
+function isiWaktuSekarang() {
+    const now = new Date();
+    const waktu = now.toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'});
+    const tgl = now.toLocaleDateString('id-ID', {weekday:'long', day:'numeric', month:'long', year:'numeric'}) + ' WITA';
+    document.getElementById('timeInput').value = waktu;
+    document.getElementById('out-time').innerText = waktu;
+    document.getElementById('desc1Input').value = tgl;
+    document.getElementById('out-desc1').innerText = tgl;
+    Swal.fire({icon:'success', title:'Diperbarui!', timer:1200, showConfirmButton:false});
 }
 
-// Simpan foto tanpa merusak posisi stempel
-function simpanFoto() {
-  if(!canvas.width) return alert('Terapkan stempel dulu ya!');
-  
-  const link = document.createElement('a');
-  link.download = `Foto_Stempel_${new Date().toISOString().slice(0,10)}.jpg`;
-  link.href = canvas.toDataURL('image/jpeg', 0.95); // Kualitas 95% agar tidak pecah
-  link.click();
-  alert('✅ Foto disimpan dengan stempel yang rapi dan tidak kacau!');
+// Reset ke contoh
+function resetDefault() {
+    document.getElementById('timeInput').value = '21:50';
+    document.getElementById('titleInput').value = 'CARYN';
+    document.getElementById('desc1Input').value = 'Minggu, 5 Juli 2026 WITA';
+    document.getElementById('desc2Input').value = 'Pallantikang, Kec. Pattallassang';
+    document.getElementById('desc3Input').value = 'Kabupaten Gowa, Sulawesi Selatan 92173';
+    document.getElementById('scaleSlider').value = 1;
+    document.documentElement.style.setProperty('--stempel-scale', 1);
+    document.getElementById('scaleVal').innerText = '100%';
+    ['time','title','desc1','desc2','desc3'].forEach(id => {
+        const input = document.getElementById(`${id}Input`);
+        const out = document.getElementById(`out-${id}`);
+        if(input && out) out.innerText = input.value;
+    });
+    Swal.fire({icon:'info', title:'Kembali ke contoh', timer:1200, showConfirmButton:false});
+}
+
+// Fungsi kamera
+async function startCamera() {
+    stopCamera();
+    const video = document.getElementById('video-stream');
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            video: {facingMode:modeKamera, width:{ideal:1280}}, audio:false
+        });
+        video.srcObject = stream;
+        videoTrack = stream;
+        document.getElementById('camera-stream-container').style.display = 'block';
+        document.getElementById('snapWrapper').classList.add('show');
+    } catch {
+        Swal.fire({icon:'error', title:'Izin kamera dibutuhkan'});
+    }
+}
+async function switchCamera() {
+    modeKamera = modeKamera==='environment'?'user':'environment';
+    await startCamera();
+}
+function stopCamera() {
+    if(videoTrack) {
+        videoTrack.getTracks().forEach(t=>t.stop());
+        document.getElementById('camera-stream-container').style.display = 'none';
+        document.getElementById('snapWrapper').classList.remove('show');
+        videoTrack = null;
+    }
+}
+function takeSnapshot() {
+    const video = document.getElementById('video-stream');
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext('2d').drawImage(video,0,0);
+    document.getElementById('preview-img').src = canvas.toDataURL('image/jpeg',0.98);
+    stopCamera();
+    Swal.fire({icon:'success', title:'Foto diambil!', timer:1200, showConfirmButton:false});
+}
+
+// Muat gambar dari galeri
+document.getElementById('imageInput').addEventListener('change', e=>{
+    const f = e.target.files[0];
+    if(!f) return;
+    const r = new FileReader();
+    r.onload = ev => {
+        document.getElementById('preview-img').src = ev.target.result;
+        Swal.fire({icon:'success', title:'Gambar dimuat!', timer:1200, showConfirmButton:false});
+    };
+    r.readAsDataURL(f);
+});
+
+// === PERBAIKAN UTAMA: KUNCI SEMUA STIL SAAT DISIMPAN ===
+function simpanGambar() {
+    Swal.fire({title:'Memproses...', allowOutsideClick:false, didOpen:()=>Swal.showLoading()});
+    const kontainer = document.getElementById('canvas-container');
+    
+    html2canvas(kontainer, {
+        useCORS:true, scale:3, scrollX:0, scrollY:0, allowTaint:true, logging:false,
+        onclone: dokumenSalin => {
+            // Kunci posisi & tampilan stempel agar tidak berubah
+            const stempel = dokumenSalin.getElementById('stempelBox');
+            const waktu = dokumenSalin.getElementById('out-time');
+            const judul = dokumenSalin.getElementById('out-title');
+            const deskripsi = dokumenSalin.querySelectorAll('.stempel-desc');
+            const kotakWaktu = dokumenSalin.querySelector('.time-badge');
+
+            stempel.style.position = 'absolute';
+            stempel.style.bottom = '30px';
+            stempel.style.left = '20px';
+            stempel.style.transform = `scale(${document.getElementById('scaleSlider').value})`;
+            stempel.style.transformOrigin = 'bottom left';
+            stempel.style.color = 'white';
+            stempel.style.width = 'auto';
+            stempel.style.maxWidth = '90%';
+
+            kotakWaktu.style.display = 'flex';
+            kotakWaktu.style.background = '#ff0000';
+            kotakWaktu.style.padding = '10px 18px';
+            kotakWaktu.style.borderRadius = '8px';
+            kotakWaktu.style.marginBottom = '12px';
+
+            waktu.style.fontSize = '40px';
+            waktu.style.fontWeight = '900';
+            waktu.style.color = 'white';
+
+            judul.style.fontSize = '22px';
+            judul.style.fontWeight = '800';
+            judul.style.color = 'white';
+            judul.style.textTransform = 'uppercase';
+
+            deskripsi.forEach(el => {
+                el.style.fontSize = '17px';
+                el.style.fontWeight = '600';
+                el.style.color = 'white';
+                el.style.marginBottom = '4px';
+            });
+        }
+    }).then(kanvas => {
+        const tautan = document.createElement('a');
+        tautan.download = `stempel_foto_${new Date().toISOString().slice(0,10)}.png`;
+        tautan.href = kanvas.toDataURL('image/png');
+        tautan.click();
+        Swal.fire({icon:'success', title:'Berhasil disimpan!', text:'Stempel sudah rapi dan tidak kacau lagi ✅'});
+    }).catch(err => {
+        Swal.fire({icon:'error', title:'Gagal menyimpan', text:err.message});
+    });
 }
 </script>
 </body>
