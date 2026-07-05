@@ -821,6 +821,7 @@
             didOpen: () => { Swal.showLoading(); } 
         });
 
+        // HAPUS SEMUA KODE YANG MENYEBUTKAN "stempelContainer"
         const container = document.getElementById('canvas-container');
         const format = document.getElementById('formatSelect').value;
         const namaFile = `shanted_timemark_${new Date().toISOString().slice(0,10)}.${format}`;
@@ -835,14 +836,14 @@
             imageTimeout: 0,
             removeContainer: false,
             onclone: (clonedDoc) => {
-                // Ambil elemen dengan nama ID yang BENAR
+                // Hanya ambil elemen dengan ID yang BENAR
                 const clonedStempel = clonedDoc.getElementById('stempel-container');
                 const clonedTimeBadge = clonedDoc.querySelector('.time-badge');
                 const clonedTime = clonedDoc.getElementById('out-time');
                 const clonedCheck = clonedDoc.querySelector('.check-circle');
                 const clonedInfo = clonedDoc.querySelector('.info-container');
                 
-                // Kunci posisi stempel
+                // Kunci posisi dan gaya
                 clonedStempel.style.transform = `scale(${document.getElementById('stempelSize').value})`;
                 clonedStempel.style.transformOrigin = getComputedStyle(clonedStempel).transformOrigin;
                 clonedStempel.style.bottom = getComputedStyle(clonedStempel).bottom;
@@ -851,7 +852,6 @@
                 clonedStempel.style.right = getComputedStyle(clonedStempel).right;
                 clonedStempel.style.lineHeight = '1.5';
                 
-                // Kunci kotak jam dan centang
                 clonedTimeBadge.style.display = 'inline-flex';
                 clonedTimeBadge.style.flexDirection = 'row';
                 clonedTimeBadge.style.alignItems = 'center';
@@ -869,14 +869,9 @@
                 clonedCheck.style.fontSize = '18px';
                 clonedCheck.style.background = 'white';
                 clonedCheck.style.color = 'var(--primary)';
-                clonedCheck.style.position = 'relative';
-                clonedCheck.style.right = '0';
-                clonedCheck.style.top = '0';
                 
-                // Kunci jarak teks agar tidak tumpang tindih
                 clonedInfo.style.marginTop = '4px';
                 clonedInfo.style.padding = '10px 14px';
-                clonedInfo.style.borderRadius = '0 8px 8px 0';
             }
         }).then(canvas => {
             const link = document.createElement('a');
