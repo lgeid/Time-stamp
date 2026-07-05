@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Shanted™ Timemark - Generator Kustom</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --bg-main: #1e1e1e;
+            --bg-panel: #2a2a2a;
+            --bg-input: #333;
+            --text-main: #ffffff;
+            --text-muted: #cccccc;
+            --border-color: #444;
+            --primary: #ff0000;
+            --primary-hover: #cc0000;
+            --secondary: #007bff;
+            --secondary-hover: #0056b3;
+            --success: #28a745;
+            --success-hover: #218838;
+            --accent: #f2c12e;
+            --shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+
+        .light-mode {
+            --bg-main: #f5f5f5;
+            --bg-panel: #ffffff;
+            --bg-input: #f0f0f0;
+            --text-main: #222222;
+            --text-muted: #555555;
+            --border-color: #dddddd;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            margin: 0;
+            padding: 15px;
+            min-height: 100vh;
+        }
+
+        h2 { 
+            text-align: center; 
+            margin-top: 0; 
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        .control-panel {
+            background-color: var(--bg-panel);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            margin: 0;
+            width: auto;
+        }
+
+        .toggle-btn:hover {
+            background-color: var(--bg-input);
+        }
+
+        .input-group { 
+            margin-bottom: 15px; 
+        }
+
+        .input-group label { 
+            display: block; 
+            margin-bottom: 6px; 
+            font-size: 14px; 
+            color: var(--text-muted); 
+            font-weight: 500;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid var(--border-color); 
+            border-radius: 8px;
+            background-color: var(--bg-input); 
+            color: var(--text-main); 
+            box-sizing: border-box; 
+            font-family: inherit;
+            font-size: 15px;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(242, 193, 46, 0.2);
+        }
+        
+        button {
+            width: 100%; 
+            padding: 13px; 
+            background-color: var(--primary); 
+            color: white;
+            border: none; 
+            border-radius: 8px; 
+            font-size: 16px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            margin-top: 10px;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+
+        button:hover { 
+            background-color: var(--primary-hover); 
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-container { 
+            width: 100%; 
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-half { 
+            flex: 1 1 calc(50% - 5px);
+            min-width: 140px;
+            font-size: 14px; 
+            padding: 11px; 
+            margin: 0;
+        }
+
+        .btn-gallery { 
+            background-color: #555555; 
+        }
+        .btn-gallery:hover { 
+            background-color: #666666; 
+        }
+
+        .btn-camera { 
+            background-color: var(--secondary); 
+        }
+        .btn-camera:hover { 
+            background-color: var(--secondary-hover); 
+        }
+
+        .btn-snap { 
+            background-color: var(--success); 
+            margin-top: 10px; 
+            display: none; 
+        }
+        .btn-snap:hover { 
+            background-color: var(--success-hover); 
+        }
+
+        .btn-secondary {
+            background-color: #444;
+            margin-top: 5px;
+        }
+        .btn-secondary:hover {
+            background-color: #555;
+        }
+
+        .btn-group-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        .btn-group-row button {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        #camera-stream-container {
+            display: none; 
+            width: 100%; 
+            max-width: 100%; 
+            background: #000; 
+            border-radius: 8px; 
+            overflow: hidden; 
+            margin-bottom: 15px; 
+            position: relative;
+        }
+
+        #video-stream { 
+            width: 100%; 
+            height: auto; 
+            display: block; 
+        }
+
+        .preview-wrapper {
+            display: flex; 
+            justify-content: center; 
+            background: #000;
+            border: 2px solid var(--border-color); 
+            border-radius: 12px; 
+            overflow: hidden;
+            padding: 10px;
+        }
+
+        #canvas-container { 
+            position: relative; 
+            display: inline-block; 
+            max-width: 100%; 
+            box-shadow: var(--shadow);
+            background: #000;
+        }
+
+        #preview-img { 
+            display: block; 
+            max-width: 100%; 
+            height: auto; 
+            object-fit: contain; 
+            border-radius: 4px;
+        }
+
+        .overlay { 
+            position: absolute; 
+            color: white; 
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9); 
+            pointer-events: none; 
+            font-family: inherit;
+        }
+
+        .top-right { 
+            top: 20px; 
+            right: 20px; 
+            text-align: right; 
+        }
+
+        .logo-text { 
+            font-size: 22px; 
+            font-weight: 900; 
+            letter-spacing: 0.5px; 
+            margin-bottom: 4px;
+        }
+        .logo-text .brand { 
+            color: var(--accent); 
+        } 
+
+        .accuracy { 
+            font-size: 13px; 
+            opacity: 0.95; 
+            font-weight: 500;
+        }
+
+        /* Kode verifikasi dipindah ke posisi atas */
+        .right-edge {
+            right: 20px; 
+            top: 120px; /* Posisi di atas, tidak ke bawah lagi */
+            transform: rotate(-90deg); 
+            transform-origin: right top;
+            font-size: 11px; 
+            letter-spacing: 1.2px; 
+            opacity: 0.85; 
+            white-space: nowrap;
+            font-weight: 500;
+        }
+
+        .bottom-left { 
+            bottom: 25px; 
+            left: 20px; 
+        }
+
+        .time-badge {
+            background-color: var(--primary); 
+            color: white; 
+            display: inline-flex;
+            align-items: center;
+            height: 42px; 
+            padding: 0 12px;
+            border-radius: 6px; 
+            margin-bottom: 12px; 
+            box-shadow: 2px 2px 6px rgba(0,0,0,0.5); 
+            white-space: nowrap; 
+            box-sizing: border-box;
+            gap: 8px;
+            z-index: 10; /* Pastikan jam di lapisan paling atas */
+            position: relative;
+        }
+
+        #out-time { 
+            font-size: 30px; 
+            font-weight: 800; 
+            letter-spacing: 1px; 
+            line-height: 42px; 
+            display: inline-block;
+            visibility: visible !important; /* Paksa tetap terlihat */
+            opacity: 1 !important;
+        }
+
+        .check-circle {
+            background-color: white; 
+            color: var(--primary); 
+            width: 24px; 
+            height: 24px; 
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px; 
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .info-container { 
+            border-left: 4px solid var(--accent); 
+            padding: 8px 12px;
+            border-radius: 0 6px 6px 0;
+            backdrop-filter: blur(2px);
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .info-title { 
+            font-size: 22px; 
+            font-weight: 700; 
+            text-transform: uppercase; 
+            margin-bottom: 4px;
+        }
+
+        .info-date, .info-address { 
+            font-size: 15px; 
+            opacity: 0.95; 
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .hidden-input {
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+            .control-panel { padding: 15px; }
+            .btn-half { flex: 1 1 100%; }
+            .right-edge { font-size: 9px; top: 100px; }
+            .info-title { font-size: 18px; }
+            #out-time { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <h2>📸 Shanted™ Timemark - Generator Kustom</h2>
+
+    <div class="control-panel">
+        <div class="panel-header">
+            <h3 class="panel-title">Pengaturan Stempel</h3>
+            <button class="toggle-btn" onclick="toggleTheme()">🌙 / ☀️ Mode</button>
+        </div>
+
+        <div class="input-group">
+            <label>Sumber Foto</label>
+            <div class="btn-container">
+                <button type="button" class="btn-half btn-gallery" onclick="stopCamera(); document.getElementById('imageInput').click()">📁 Buka Galeri</button>
+                <button type="button" class="btn-half btn-camera" onclick="startCamera()">📷 Aktifkan Kamera</button>
+            </div>
+            <input type="file" id="imageInput" accept="image/*" style="display: none;">
+        </div>
+
+        <div id="camera-stream-container">
+            <video id="video-stream" autoplay playsinline muted></video>
+            <button type="button" class="btn-snap" id="snapBtn" onclick="takeSnapshot()">📸 JEPRET FOTO</button>
+        </div>
+
+        <div class="settings-grid">
+            <div class="input-group">
+                <label>Waktu (Jam:Menit)</label>
+                <input type="text" id="timeInput" value="21:28">
+            </div>
+            <div class="input-group">
+                <label>Posisi Stempel</label>
+                <select id="positionSelect">
+                    <option value="bottom-left" selected>Kiri Bawah</option>
+                    <option value="bottom-right">Kanan Bawah</option>
+                    <option value="top-left">Kiri Atas</option>
+                    <option value="top-right">Kanan Atas</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>Judul Kegiatan</label>
+            <input type="text" id="titleInput" value="CARY IN">
+        </div>
+        <div class="input-group">
+            <label>Tanggal & Zona Waktu</label>
+            <input type="text" id="dateInput" value="Minggu, 5 Juli 2026 WITA">
+        </div>
+        <div class="input-group">
+            <label>Alamat Baris 1</label>
+            <input type="text" id="address1Input" value="Pallantikang, Kec. Pattallassang, Kabupaten">
+        </div>
+        <div class="input-group">
+            <label>Alamat Baris 2</label>
+            <input type="text" id="address2Input" value="Gowa, Sulawesi Selatan 92173">
+        </div>
+        <div class="input-group">
+            <label>Kode Verifikasi (Otomatis Acak)</label>
+            <input type="text" id="verifyInput" readonly placeholder="Dibuat otomatis">
+        </div>
+
+        <div class="settings-grid">
+            <div class="input-group">
+                <label>Ukuran Teks</label>
+                <select id="fontSizeSelect">
+                    <option value="small">Kecil</option>
+                    <option value="medium" selected>Sedang</option>
+                    <option value="large">Besar</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Format Simpan</label>
+                <select id="formatSelect">
+                    <option value="png" selected>PNG (Kualitas Tinggi)</option>
+                    <option value="jpeg">JPG (Ukuran Kecil)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="btn-group-row">
+            <button class="btn-secondary" onclick="resetToDefault()">🔄 Reset Default</button>
+            <button class="btn-secondary" onclick="generateNewVerify()">🔑 Buat Kode Baru</button>
+            <button class="btn-secondary" onclick="autoFillDateTime()">🕒 Waktu Sekarang</button>
+        </div>
+        <button onclick="downloadImage()">💾 Simpan Hasil Gambar</button>
+    </div>
+
+    <div class="preview-wrapper">
+        <div id="canvas-container">
+            <img id="preview-img" src="https://via.placeholder.com/720x960/333333/555555?text=Pratinjau+Foto" alt="Pratinjau Hasil">
+            
+            <div class="overlay top-right">
+                <div class="logo-text"><span class="brand">Shanted™</span> Timemark</div>
+                <div class="accuracy">Foto 100% akurat</div>
+            </div>
+
+            <div class="overlay right-edge" id="out-verify"></div>
+
+            <div class="overlay bottom-left" id="stempel-container">
+                <div class="time-badge">
+                    <span id="out-time">21:28</span><span class="check-circle">✔</span>
+                </div>
+                <div class="info-container">
+                    <div class="info-title" id="out-title">CARY IN</div>
+                    <div class="info-date" id="out-date">Minggu, 5 Juli 2026 WITA</div>
+                    <div class="info-address" id="out-address1">Pallantikang, Kec. Pattallassang, Kabupaten</div>
+                    <div class="info-address" id="out-address2">Gowa, Sulawesi Selatan 92173</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let videoStreamTrack = null;
+    const DEFAULT_VALUES = {
+        time: "21:28",
+        title: "CARY IN",
+        date: "Minggu, 5 Juli 2026 WITA",
+        address1: "Pallantikang, Kec. Pattallassang, Kabupaten",
+        address2: "Gowa, Sulawesi Selatan 92173"
+    };
+
+    // Fungsi buat kode verifikasi acak unik
+    function generateRandomVerifyCode() {
+        const prefix = "ITVPSTR3USP9PE";
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        let randomPart = "";
+        for (let i = 0; i < 8; i++) {
+            randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return `${prefix}${randomPart}`;
+    }
+
+    function generateNewVerify() {
+        const newCode = generateRandomVerifyCode();
+        document.getElementById('verifyInput').value = newCode;
+        document.getElementById('out-verify').innerText = newCode;
+        Swal.fire({ icon: 'success', title: 'Kode Baru Dibuat!', timer: 1200, showConfirmButton: false });
+    }
+
+    function toggleTheme() {
+        document.body.classList.toggle('light-mode');
+        localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+    }
+
+    function autoFillDateTime() {
+        const now = new Date();
+        const waktu = now.toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
+        const tanggal = now.toLocaleDateString('id-ID', {weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'}) + ' WITA';
+        
+        document.getElementById('timeInput').value = waktu;
+        document.getElementById('dateInput').value = tanggal;
+        document.getElementById('out-time').innerText = waktu;
+        document.getElementById('out-date').innerText = tanggal;
+        Swal.fire({ icon: 'success', title: 'Waktu Diperbarui!', timer: 1200, showConfirmButton: false });
+    }
+
+    function resetToDefault() {
+        Object.keys(DEFAULT_VALUES).forEach(key => {
+            document.getElementById(`${key}Input`).value = DEFAULT_VALUES[key];
+            document.getElementById(`out-${key}`).innerText = DEFAULT_VALUES[key];
+        });
+        generateNewVerify();
+        Swal.fire({ icon: 'info', title: 'Kembali ke Nilai Default', timer: 1200, showConfirmButton: false });
+    }
+
+    window.onload = function() {
+        const savedTheme = localStorage.getItem('theme');
+        if(savedTheme === 'light') toggleTheme();
+
+        // Buat kode acak otomatis saat halaman dibuka
+        generateNewVerify();
+        setupPositionControl();
+    };
+
+    function setupPositionControl() {
+        const stempel = document.getElementById('stempel-container');
+        document.getElementById('positionSelect').addEventListener('change', function(e) {
+            stempel.className = `overlay ${e.target.value}`;
+        });
+    }
+
+    function startCamera() {
+        const constraints = { 
+            video: { 
+                facingMode: { exact: "environment" },
+                width: { ideal: 1280 },
+                height: { ideal: 720 }
+            } 
+        };
+
+        navigator.mediaDevices.getUserMedia(constraints)
+            .then(function(stream) {
+                const video = document.getElementById('video-stream');
+                video.srcObject = stream;
+                videoStreamTrack = stream;
+                document.getElementById('camera-stream-container').style.display = 'block';
+                document.getElementById('snapBtn').style.display = 'block';
+                Swal.fire({ icon: 'success', title: 'Kamera Aktif!', timer: 1500, showConfirmButton: false });
+            })
+            .catch(function(err) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function(stream) {
+                        const video = document.getElementById('video-stream');
+                        video.srcObject = stream;
+                        videoStreamTrack = stream;
+                        document.getElementById('camera-stream-container').style.display = 'block';
+                        document.getElementById('snapBtn').style.display = 'block';
+                        Swal.fire({ icon: 'warning', title: 'Kamera Aktif', text: 'Tidak dapat memastikan kamera belakang.', timer: 2000 });
+                    })
+                    .catch(function(error) {
+                        Swal.fire({ 
+                            icon: 'error', 
+                            title: 'Gagal Akses Kamera', 
+                            text: 'Pastikan memberikan izin kamera pada setelan HP dan browser Anda.',
+                            confirmButtonColor: '#ff0000'
+                        });
+                    });
+            });
+    }
+
+    function stopCamera() {
+        if (videoStreamTrack) {
+            videoStreamTrack.getTracks().forEach(track => track.stop());
+            document.getElementById('camera-stream-container').style.display = 'none';
+            videoStreamTrack = null;
+        }
+    }
+
+    function takeSnapshot() {
+        const video = document.getElementById('video-stream');
+        if(!video.videoWidth) {
+            Swal.fire({ icon: 'warning', title: 'Sedang Memuat Kamera...', timer: 1500, showConfirmButton: false });
+            return;
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        
+        document.getElementById('preview-img').src = canvas.toDataURL('image/jpeg', 0.95);
+        stopCamera();
+        Swal.fire({ icon: 'success', title: 'Berhasil Dijepret!', timer: 1500, showConfirmButton: false });
+    }
+
+    document.getElementById('imageInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith('image/')) {
+            Swal.fire({ icon: 'error', title: 'File Tidak Didukung', text: 'Silakan pilih file gambar yang valid.' });
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            document.getElementById('preview-img').src = event.target.result;
+            Swal.fire({ icon: 'success', title: 'Foto Dimuat!', timer: 1500, showConfirmButton: false });
+        }
+        reader.onerror = () => {
+            Swal.fire({ icon: 'error', title: 'Gagal Membaca File' });
+        }
+        reader.readAsDataURL(file);
+    });
+
+    // Sinkronisasi input ke tampilan pratinjau
+    document.getElementById('timeInput').addEventListener('input', e => {
+        document.getElementById('out-time').innerText = e.target.value;
+    });
+    document.getElementById('titleInput').addEventListener('input', e => {
+        document.getElementById('out-title').innerText = e.target.value;
+    });
+    document.getElementById('dateInput').addEventListener('input', e => {
+        document.getElementById('out-date').innerText = e.target.value;
+    });
+    document.getElementById('address1Input').addEventListener('input', e => {
+        document.getElementById('out-address1').innerText = e.target.value;
+    });
+    document.getElementById('address2Input').addEventListener('input', e => {
+        document.getElementById('out-address2').innerText = e.target.value;
+    });
+
+    function downloadImage() {
+        Swal.fire({ 
+            title: 'Sedang memproses gambar...', 
+            text: 'Tunggu sebentar, jangan tutup halaman.',
+            allowOutsideClick: false, 
+            didOpen: () => { Swal.showLoading(); } 
+        });
+
+        const container = document.getElementById('canvas-container');
+        const format = document.getElementById('formatSelect').value;
+        const namaFile = `shanted_timemark_${new Date().toISOString().slice(0,10)}.${format}`;
+        
+        // Perbaikan konfigurasi html2canvas agar semua elemen tertera sempurna
+        html2canvas(container, { 
+            useCORS: true, 
+            scale: 3,
+            scrollX: 0,
+            scrollY: 0,
+            allowTaint: true,
+            logging: false,
+            ignoreElements: el => false, // Ambil SEMUA elemen termasuk jam
+            onclone: (clonedDoc) => {
+                // Paksa jam tetap terlihat di salinan tangkapan layar
+                const clonedTime = clonedDoc.getElementById('out-time');
+                if(clonedTime) {
+                    clonedTime.style.visibility = 'visible';
+                    clonedTime.style.opacity = '1';
+                    clonedTime.style.display = 'inline-block';
+                }
+            }
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = namaFile;
+            
+            if(format === 'jpeg') {
+                link.href = canvas.toDataURL('image/jpeg', 0.92);
+            } else {
+                link.href = canvas.toDataURL('image/png');
+            }
+            
+            link.click();
+            
+            Swal.fire({ 
+                icon: 'success', 
+                title: 'Berhasil Disimpan!', 
+                text: 'Cek galeri atau folder unduhan Anda.', 
+                confirmButtonColor: '#ff0000' 
+            });
+        }).catch(err => {
+            Swal.fire({ 
+                icon: 'error', 
+                title: 'Gagal Menyimpan', 
+                text: 'Terjadi kesalahan: ' + err.message 
+            });
+        });
+    }
+</script>
+
+</body>
+</html>
