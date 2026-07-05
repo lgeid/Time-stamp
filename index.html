@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generator Timemark Custom - Fixed</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+        h2 { text-align: center; margin-top: 0; }
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .control-panel {
+            background-color: #2a2a2a;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        .input-group { margin-bottom: 12px; }
+        .input-group label { display: block; margin-bottom: 5px; font-size: 14px; color: #cccccc; }
+        .input-group input {
+            width: 100%; padding: 10px; border: 1px solid #444; border-radius: 4px;
+            background-color: #333; color: white; box-sizing: border-box; font-family: inherit;
+        }
+        button {
+            width: 100%; padding: 12px; background-color: #ff0000; color: white;
+            border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;
+        }
+        button:hover { background-color: #cc0000; }
+
+        /* Area Preview Gambar */
+        .preview-wrapper {
+            display: flex; justify-content: center; background: #000;
+            border: 1px solid #444; border-radius: 8px; overflow: hidden;
+        }
+        #canvas-container {
+            position: relative; display: inline-block; max-width: 100%;
+        }
+        #preview-img {
+            display: block; max-width: 100%; height: auto; object-fit: contain;
+        }
+
+        /* Gaya Teks Overlay */
+        .overlay {
+            position: absolute; color: white; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8); pointer-events: none;
+        }
+
+        /* Pojok Kanan Atas */
+        .top-right { top: 15px; right: 15px; text-align: right; }
+        .top-right .logo-text { font-size: 18px; font-weight: bold; letter-spacing: 0.5px; }
+        .logo-text .time-part { color: #f2c12e; } 
+        .top-right .accuracy { font-size: 12px; opacity: 0.9; }
+
+        /* Sisi Kanan Vertikal (DIUBAH AGAR SUPPORT HTML2CANVAS) */
+        .right-edge {
+            right: 15px;
+            bottom: 30%; /* Penyesuaian posisi vertikal */
+            transform: rotate(-90deg);
+            transform-origin: right bottom;
+            font-size: 10px;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            white-space: nowrap;
+        }
+
+        /* Pojok Kiri Bawah */
+        .bottom-left { bottom: 25px; left: 20px; }
+
+        /* Kotak Merah Waktu (DIUBAH AGAR SUPPORT HTML2CANVAS) */
+        .time-badge {
+            background-color: #ff0000;
+            color: white;
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+            line-height: 1; /* Menjaga ukuran kotak */
+        }
+        
+        #out-time {
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-shadow: none;
+            vertical-align: middle;
+        }
+
+        .check-circle {
+            background-color: white;
+            color: #ff0000;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: inline-block;
+            text-align: center;
+            line-height: 22px; /* Pusatkan centang vertikal */
+            font-size: 14px;
+            font-weight: bold;
+            vertical-align: middle;
+            margin-left: 6px; /* Jarak antara jam dan centang */
+        }
+
+        /* Kotak Informasi Garis Kuning */
+        .info-container {
+            border-left: 3px solid #f2c12e;
+            padding-left: 12px;
+        }
+        .info-title { font-size: 20px; font-weight: bold; text-transform: uppercase; margin-bottom: 3px;}
+        .info-date, .info-address { font-size: 14px; opacity: 0.95; margin-bottom: 3px;}
+
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <h2>Generator Timemark</h2>
+
+    <div class="control-panel">
+        <div class="input-group">
+            <label>Unggah Foto</label>
+            <input type="file" id="imageInput" accept="image/*">
+        </div>
+        <div class="input-group">
+            <label>Waktu (Misal: 19:35)</label>
+            <input type="text" id="timeInput" value="19:35">
+        </div>
+        <div class="input-group">
+            <label>Judul Kegiatan (Misal: CARY IN)</label>
+            <input type="text" id="titleInput" value="CARY IN">
+        </div>
+        <div class="input-group">
+            <label>Tanggal & Waktu Zona (Misal: Minggu, 05 Juli 2026 WITA)</label>
+            <input type="text" id="dateInput" value="Minggu, 05 Juli 2026 WITA">
+        </div>
+        <div class="input-group">
+            <label>Alamat Baris 1</label>
+            <input type="text" id="address1Input" value="Pallantikang, Kec. Pattallassang, Kabupaten">
+        </div>
+        <div class="input-group">
+            <label>Alamat Baris 2 (Kota/Prov/Kode Pos)</label>
+            <input type="text" id="address2Input" value="Gowa, Sulawesi Selatan 92173">
+        </div>
+        <div class="input-group">
+            <label>Kode Verifikasi Kanan</label>
+            <input type="text" id="verifyInput" value="URDMN2MAPK4PXW Timemark Verified">
+        </div>
+        <button onclick="downloadImage()">Simpan Gambar</button>
+    </div>
+
+    <div class="preview-wrapper">
+        <div id="canvas-container">
+            <img id="preview-img" src="https://via.placeholder.com/600x800/333333/555555?text=Unggah+Foto+Di+Atas" alt="Preview">
+            
+            <div class="overlay top-right">
+                <div class="logo-text"><span class="time-part">Time</span>mark</div>
+                <div class="accuracy">Foto 100% akurat</div>
+            </div>
+
+            <div class="overlay right-edge" id="out-verify">
+                🛡️ URDMN2MAPK4PXW Timemark Verified
+            </div>
+
+            <div class="overlay bottom-left">
+                <div class="time-badge">
+                    <span id="out-time">19:35</span><div class="check-circle">✔</div>
+                </div>
+                <div class="info-container">
+                    <div class="info-title" id="out-title">CARY IN</div>
+                    <div class="info-date" id="out-date">Minggu, 05 Juli 2026 WITA</div>
+                    <div class="info-address" id="out-address1">Pallantikang, Kec. Pattallassang, Kabupaten</div>
+                    <div class="info-address" id="out-address2">Gowa, Sulawesi Selatan 92173</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const imageInput = document.getElementById('imageInput');
+    const previewImg = document.getElementById('preview-img');
+
+    imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                previewImg.src = event.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    function syncInput(inputId, outputId, prefix = "") {
+        document.getElementById(inputId).addEventListener('input', function(e) {
+            document.getElementById(outputId).innerText = prefix + e.target.value;
+        });
+    }
+
+    syncInput('timeInput', 'out-time');
+    syncInput('titleInput', 'out-title');
+    syncInput('dateInput', 'out-date');
+    syncInput('address1Input', 'out-address1');
+    syncInput('address2Input', 'out-address2');
+    syncInput('verifyInput', 'out-verify', '🛡️ '); 
+
+    function downloadImage() {
+        const container = document.getElementById('canvas-container');
+        
+        html2canvas(container, {
+            useCORS: true,
+            scale: 2
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'timemark-custom.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    }
+</script>
+
+</body>
+</html>
