@@ -263,6 +263,9 @@
             text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.9); 
             pointer-events: none; 
             font-family: inherit;
+            visibility: visible !important;
+            opacity: 1 !important;
+            display: block !important;
         }
 
         .top-right { 
@@ -287,10 +290,10 @@
             font-weight: 500;
         }
 
-        /* Kode verifikasi dipindah ke posisi atas */
+        /* Kode verifikasi posisi kanan atas */
         .right-edge {
-            right: 20px; 
-            top: 120px; /* Posisi di atas, tidak ke bawah lagi */
+            right: 15px; 
+            top: 120px;
             transform: rotate(-90deg); 
             transform-origin: right top;
             font-size: 11px; 
@@ -300,9 +303,30 @@
             font-weight: 500;
         }
 
-        .bottom-left { 
+        /* === PERBAIKAN POSISI STEMPEL UNTUK SEMUA PILIHAN === */
+        .stempel-wrapper {
+            max-width: 75%;
+        }
+
+        .stempel-wrapper.bottom-left { 
             bottom: 25px; 
             left: 20px; 
+            text-align: left;
+        }
+        .stempel-wrapper.bottom-right { 
+            bottom: 25px; 
+            right: 20px; 
+            text-align: right;
+        }
+        .stempel-wrapper.top-left { 
+            top: 120px; 
+            left: 20px; 
+            text-align: left;
+        }
+        .stempel-wrapper.top-right { 
+            top: 120px; 
+            right: 20px; 
+            text-align: right;
         }
 
         .time-badge {
@@ -318,8 +342,9 @@
             white-space: nowrap; 
             box-sizing: border-box;
             gap: 8px;
-            z-index: 10; /* Pastikan jam di lapisan paling atas */
             position: relative;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
 
         #out-time { 
@@ -327,9 +352,10 @@
             font-weight: 800; 
             letter-spacing: 1px; 
             line-height: 42px; 
-            display: inline-block;
-            visibility: visible !important; /* Paksa tetap terlihat */
+            display: inline-block !important;
+            visibility: visible !important;
             opacity: 1 !important;
+            color: white !important;
         }
 
         .check-circle {
@@ -352,6 +378,8 @@
             border-radius: 0 6px 6px 0;
             backdrop-filter: blur(2px);
             background-color: rgba(0,0,0,0.5);
+            display: inline-block;
+            text-align: inherit;
         }
 
         .info-title { 
@@ -375,10 +403,6 @@
             margin-bottom: 15px;
         }
 
-        .hidden-input {
-            display: none;
-        }
-
         @media (max-width: 480px) {
             body { padding: 10px; }
             .control-panel { padding: 15px; }
@@ -386,6 +410,7 @@
             .right-edge { font-size: 9px; top: 100px; }
             .info-title { font-size: 18px; }
             #out-time { font-size: 24px; }
+            .stempel-wrapper { max-width: 85%; }
         }
     </style>
 </head>
@@ -417,7 +442,7 @@
         <div class="settings-grid">
             <div class="input-group">
                 <label>Waktu (Jam:Menit)</label>
-                <input type="text" id="timeInput" value="21:28">
+                <input type="text" id="timeInput" value="21:45">
             </div>
             <div class="input-group">
                 <label>Posisi Stempel</label>
@@ -488,9 +513,10 @@
 
             <div class="overlay right-edge" id="out-verify"></div>
 
-            <div class="overlay bottom-left" id="stempel-container">
+            <!-- Pembungkus stempel yang bisa berubah posisi -->
+            <div class="overlay stempel-wrapper bottom-left" id="stempel-container">
                 <div class="time-badge">
-                    <span id="out-time">21:28</span><span class="check-circle">✔</span>
+                    <span id="out-time">21:45</span><span class="check-circle">✔</span>
                 </div>
                 <div class="info-container">
                     <div class="info-title" id="out-title">CARY IN</div>
@@ -506,7 +532,7 @@
 <script>
     let videoStreamTrack = null;
     const DEFAULT_VALUES = {
-        time: "21:28",
+        time: "21:45",
         title: "CARY IN",
         date: "Minggu, 5 Juli 2026 WITA",
         address1: "Pallantikang, Kec. Pattallassang, Kabupaten",
@@ -566,10 +592,14 @@
         setupPositionControl();
     };
 
+    // === FUNGSI PERUBAH POSISI YANG SUDAH DIPERBAIKI ===
     function setupPositionControl() {
         const stempel = document.getElementById('stempel-container');
         document.getElementById('positionSelect').addEventListener('change', function(e) {
-            stempel.className = `overlay ${e.target.value}`;
+            // Hapus semua kelas posisi lama
+            stempel.classList.remove('bottom-left', 'bottom-right', 'top-left', 'top-right');
+            // Tambahkan kelas posisi baru
+            stempel.classList.add(e.target.value);
         });
     }
 
@@ -687,7 +717,7 @@
         const format = document.getElementById('formatSelect').value;
         const namaFile = `shanted_timemark_${new Date().toISOString().slice(0,10)}.${format}`;
         
-        // Perbaikan konfigurasi html2canvas agar semua elemen tertera sempurna
+        // Konfigurasi tangkapan layar yang memaksa semua elemen termasuk jam tetap terlihat
         html2canvas(container, { 
             useCORS: true, 
             scale: 3,
@@ -695,15 +725,15 @@
             scrollY: 0,
             allowTaint: true,
             logging: false,
-            ignoreElements: el => false, // Ambil SEMUA elemen termasuk jam
             onclone: (clonedDoc) => {
-                // Paksa jam tetap terlihat di salinan tangkapan layar
-                const clonedTime = clonedDoc.getElementById('out-time');
-                if(clonedTime) {
-                    clonedTime.style.visibility = 'visible';
-                    clonedTime.style.opacity = '1';
-                    clonedTime.style.display = 'inline-block';
-                }
+                // Paksa semua elemen stempel tetap terlihat
+                const clonedElements = clonedDoc.querySelectorAll('.overlay, .time-badge, #out-time');
+                clonedElements.forEach(el => {
+                    el.style.visibility = 'visible';
+                    el.style.opacity = '1';
+                    el.style.display = 'block';
+                    el.style.color = 'white';
+                });
             }
         }).then(canvas => {
             const link = document.createElement('a');
