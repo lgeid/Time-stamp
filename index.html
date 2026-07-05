@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Shanted™ Timemark - Generator Kustom Pro</title>
+    <title>Shanted™ Timemark Pro - Stabil</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
@@ -17,9 +17,7 @@
             --primary: #ff0000;
             --primary-hover: #cc0000;
             --secondary: #007bff;
-            --secondary-hover: #0056b3;
             --success: #28a745;
-            --success-hover: #218838;
             --accent: #f2c12e;
             --shadow: 0 4px 12px rgba(0,0,0,0.4);
             --stempel-scale: 1;
@@ -100,6 +98,7 @@
         .btn-snap {
             width: 72px; height: 72px; border: 5px solid #ffffff; border-radius: 50%;
             background: var(--success); box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.3); transition: all 0.15s ease;
+            position: relative; cursor: pointer;
         }
         .btn-snap::after {
             content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -140,68 +139,102 @@
         .accuracy { font-size: 13px; opacity: 0.95; font-weight: 500; }
         .right-edge { right: 15px; top: 140px; transform: rotate(-90deg); transform-origin: right top; font-size: 11px; letter-spacing: 1.2px; opacity: 0.85; white-space: nowrap; font-weight: 500; }
 
-        /* POSISI STEMPEL */
-        .stempel-wrapper { max-width: 85%; transform-origin: inherit !important; transform: scale(var(--stempel-scale)) !important; line-height: 1.5 !important; }
-        .stempel-wrapper.bottom-left { bottom: 25px; left: 20px; text-align: left; transform-origin: bottom left !important; }
-        .stempel-wrapper.bottom-right { bottom: 25px; right: 20px; text-align: right; transform-origin: bottom right !important; }
-        .stempel-wrapper.top-left { top: 140px; left: 20px; text-align: left; transform-origin: top left !important; }
-        .stempel-wrapper.top-right { top: 140px; right: 20px; text-align: right; transform-origin: top right !important; }
+        /* === POSISI & UKURAN STEMPEL DIKUNCI MUTLAK === */
+        .stempel-wrapper { 
+            position: absolute !important; 
+            bottom: 25px !important; 
+            left: 20px !important; 
+            max-width: 85% !important; 
+            transform-origin: bottom left !important; 
+            transform: scale(var(--stempel-scale)) !important; 
+            line-height: 1.5 !important; 
+            width: auto !important;
+            height: auto !important;
+        }
+        .stempel-wrapper.bottom-right { left: auto !important; right: 20px !important; transform-origin: bottom right !important; }
+        .stempel-wrapper.top-left { top: 140px !important; bottom: auto !important; transform-origin: top left !important; }
+        .stempel-wrapper.top-right { top: 140px !important; bottom: auto !important; left: auto !important; right: 20px !important; transform-origin: top right !important; }
 
-        /* BUG FIX: BASE STYLE STEMPEL AMAN UNTUK HTML2CANVAS */
+        /* === KOTAK WAKTU & CENTANG DIKUNCI 100% === */
         .time-badge {
-            display: flex !important; align-items: center !important; justify-content: flex-start !important;
-            min-height: 48px !important; padding: 8px 16px !important; border-radius: 8px !important;
-            margin-bottom: 8px !important; gap: 12px !important; width: max-content !important;
+            display: flex !important; 
+            align-items: center !important; 
+            justify-content: flex-start !important;
+            flex-direction: row !important;
+            min-height: 48px !important; 
+            padding: 8px 16px !important; 
+            border-radius: 8px !important;
+            margin-bottom: 8px !important; 
+            gap: 12px !important; 
+            width: fit-content !important;
+            position: relative !important;
+            box-sizing: border-box !important;
         }
-        #out-time { font-size: 32px !important; font-weight: 800 !important; line-height: 1 !important; margin: 0 !important; }
+        #out-time { 
+            font-size: 32px !important; 
+            font-weight: 800 !important; 
+            line-height: 1 !important; 
+            margin: 0 !important; 
+            padding: 0 !important;
+            display: inline-block !important;
+            flex-shrink: 0 !important;
+            min-width: 60px !important;
+        }
         
-        /* Check icon dipisahkan jadi elemen span nyata agar terbaca html2canvas */
+        /* Centang dijadikan elemen nyata, bukan pseudo */
         .check-circle {
-            width: 28px !important; height: 28px !important; border-radius: 50% !important;
-            display: flex !important; align-items: center !important; justify-content: center !important;
-            font-size: 16px !important; font-weight: 900 !important;
+            width: 28px !important; 
+            height: 28px !important; 
+            border-radius: 50% !important;
+            display: inline-flex !important; 
+            align-items: center !important; 
+            justify-content: center !important;
+            font-size: 16px !important; 
+            font-weight: 900 !important;
+            flex-shrink: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            position: relative !important;
+            top: 0 !important;
+            left: 0 !important;
+        }
+        .icon-v {
+            display: inline !important;
+            line-height: 1 !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
         
-        .info-container { display: block !important; margin-top: 8px !important; }
-        .info-title { font-size: 24px !important; font-weight: 800 !important; margin-bottom: 6px !important; line-height: 1.2 !important; }
+        .info-container { display: block !important; margin-top: 8px !important; width: 100% !important; }
+        .info-title { font-size: 24px !important; font-weight: 800 !important; margin-bottom: 6px !important; line-height: 1.2 !important; display: block !important; }
         .info-date, .info-address { font-size: 16px !important; margin-bottom: 4px !important; line-height: 1.4 !important; font-weight: 600 !important; display: block !important; }
 
-        /* ======================================================= */
-        /* GAYA STEMPEL (Menggunakan Hex Code Mutlak tanpa var CSS)*/
-        /* ======================================================= */
-        
-        /* 1. KLASIK MERAH */
+        /* === GAYA STEMPEL DENGAN WARNA TETAP === */
         .style-klasik .time-badge { background-color: #ff0000 !important; box-shadow: 2px 2px 6px rgba(0,0,0,0.5) !important; }
         .style-klasik #out-time { color: #ffffff !important; }
         .style-klasik .check-circle { background-color: #ffffff !important; }
-        .style-klasik .check-circle .icon-v { color: #ff0000 !important; }
-        .style-klasik .info-container { padding: 0 !important; border: none !important; }
+        .style-klasik .icon-v { color: #ff0000 !important; }
         .style-klasik .info-title, .style-klasik .info-date, .style-klasik .info-address { color: #ffffff !important; }
 
-        /* 2. GELAP ELEGAN */
-        .style-gelap .time-badge { background-color: #222222 !important; box-shadow: 2px 2px 6px rgba(0,0,0,0.5) !important; border: 1px solid #444444 !important; }
+        .style-gelap .time-badge { background-color: #222222 !important; border: 1px solid #444444 !important; }
         .style-gelap #out-time { color: #ffffff !important; }
         .style-gelap .check-circle { background-color: #007bff !important; }
-        .style-gelap .check-circle .icon-v { color: #ffffff !important; }
+        .style-gelap .icon-v { color: #ffffff !important; }
         .style-gelap .info-container { border-left: 4px solid #007bff !important; padding-left: 12px !important; }
         .style-gelap .info-title, .style-gelap .info-date, .style-gelap .info-address { color: #ffffff !important; text-shadow: 1px 1px 2px black !important;}
 
-        /* 3. KACA MODERN */
-        .style-kaca.stempel-wrapper { background: rgba(0, 0, 0, 0.45) !important; padding: 15px !important; border-radius: 12px !important; border: 1px solid rgba(255,255,255,0.2) !important; box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important;}
-        .style-kaca .time-badge { background-color: transparent !important; padding: 0 !important; box-shadow: none !important; margin-bottom: 12px !important;}
+        .style-kaca.stempel-wrapper { background: rgba(0, 0, 0, 0.45) !important; padding: 15px !important; border-radius: 12px !important; border: 1px solid rgba(255,255,255,0.2) !important;}
+        .style-kaca .time-badge { background-color: transparent !important; padding: 0 !important; margin-bottom: 12px !important;}
         .style-kaca #out-time { color: #f2c12e !important; }
         .style-kaca .check-circle { background-color: #f2c12e !important; }
-        .style-kaca .check-circle .icon-v { color: #000000 !important; }
-        .style-kaca .info-container { padding: 0 !important; border: none !important; }
+        .style-kaca .icon-v { color: #000000 !important; }
         .style-kaca .info-title, .style-kaca .info-date, .style-kaca .info-address { color: #ffffff !important; }
 
-        /* 4. MINIMALIS OUTLINE */
-        .style-minimalis .time-badge { background-color: transparent !important; padding: 0 !important; box-shadow: none !important; margin-bottom: 5px !important; }
+        .style-minimalis .time-badge { background-color: transparent !important; padding: 0 !important; margin-bottom: 5px !important; }
         .style-minimalis #out-time { color: #f2c12e !important; font-size: 38px !important; text-shadow: 2px 2px 0px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000 !important; }
         .style-minimalis .check-circle { display: none !important; }
         .style-minimalis .info-container { padding-top: 8px !important; border-top: 3px solid #f2c12e !important; }
         .style-minimalis .info-title, .style-minimalis .info-date, .style-minimalis .info-address { color: #ffffff !important; text-shadow: 1px 1px 3px black !important; }
-
 
         .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 15px; }
         @keyframes snapFlash { 0% { opacity: 1; filter: brightness(1); } 50% { opacity: 0.7; filter: brightness(2); } 100% { opacity: 1; filter: brightness(1); } }
@@ -212,14 +245,16 @@
             .right-edge { font-size: 9px; top: 120px; }
             .mini-map-container { width: 75px; height: 95px; }
             .mini-map-container .pin { font-size: 22px; }
-            .stempel-wrapper { max-width: 90%; }
+            .stempel-wrapper { max-width: 90% !important; }
+            #out-time { font-size: 28px !important; }
+            .info-title { font-size: 20px !important; }
         }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <h2>📸 Shanted™ Timemark Pro</h2>
+    <h2>📸 Shanted™ Timemark Pro - Stabil</h2>
 
     <div class="control-panel">
         <div class="panel-header">
@@ -504,25 +539,64 @@
         reader.readAsDataURL(file);
     });
 
+    // === PERBAIKAN UTAMA: KUNCI SEMUA ELEMEN SAAT DISIMPAN ===
     function downloadImage() {
         Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
         const container = document.getElementById('canvas-container');
+        const skalaStempel = document.getElementById('stempelSize').value;
+        const posisiStempel = document.getElementById('positionSelect').value;
+        const gayaStempel = document.getElementById('styleSelect').value;
         
         html2canvas(container, { 
             useCORS: true, 
             scale: 3, 
             backgroundColor: null,
+            allowTaint: true,
+            logging: false,
             onclone: (clonedDoc) => {
+                // Kunci posisi & gaya stempel mutlak
                 const clonedStempel = clonedDoc.getElementById('stempel-container');
-                clonedStempel.style.transform = `scale(${document.getElementById('stempelSize').value})`;
+                clonedStempel.style.transform = `scale(${skalaStempel})`;
                 clonedStempel.style.transformOrigin = getComputedStyle(clonedStempel).transformOrigin;
+                clonedStempel.classList.remove('bottom-left', 'bottom-right', 'top-left', 'top-right', 'style-klasik', 'style-gelap', 'style-kaca', 'style-minimalis');
+                clonedStempel.classList.add(posisiStempel, gayaStempel);
+
+                // Kunci kotak waktu & jam
+                const clonedTimeBadge = clonedDoc.querySelector('.time-badge');
+                clonedTimeBadge.style.display = 'flex';
+                clonedTimeBadge.style.alignItems = 'center';
+                clonedTimeBadge.style.gap = '12px';
+                clonedTimeBadge.style.padding = '8px 16px';
+                clonedTimeBadge.style.marginBottom = '8px';
+
+                const clonedTime = clonedDoc.getElementById('out-time');
+                clonedTime.style.fontSize = '32px';
+                clonedTime.style.fontWeight = '800';
+                clonedTime.style.margin = '0';
+                clonedTime.style.padding = '0';
+
+                // Kunci centang agar tidak bergeser
+                const clonedCheck = clonedDoc.querySelector('.check-circle');
+                clonedCheck.style.display = 'inline-flex';
+                clonedCheck.style.width = '28px';
+                clonedCheck.style.height = '28px';
+                clonedCheck.style.fontSize = '16px';
+                clonedCheck.style.margin = '0';
+                clonedCheck.style.padding = '0';
+                clonedCheck.style.flexShrink = '0';
+
+                const clonedIcon = clonedDoc.querySelector('.icon-v');
+                clonedIcon.style.display = 'inline';
+                clonedIcon.style.lineHeight = '1';
             }
         }).then(canvas => {
             const link = document.createElement('a');
             link.download = `Timemark_Pro_${new Date().getTime()}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
-            Swal.fire({ icon: 'success', title: 'Berhasil Disimpan!', confirmButtonColor: '#ff0000' });
+            Swal.fire({ icon: 'success', title: 'Berhasil Disimpan!', text: 'Jam dan centang sudah tetap di tempatnya ✅', confirmButtonColor: '#ff0000' });
+        }).catch(err => {
+            Swal.fire({ icon: 'error', title: 'Gagal Menyimpan', text: err.message });
         });
     }
 </script>
