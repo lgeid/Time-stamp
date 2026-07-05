@@ -418,7 +418,6 @@
             justify-content: center !important;
             font-size: 18px !important; 
             font-weight: 900 !important;
-            content: "✔" !important;
             flex-shrink: 0 !important;
             margin: 0 !important;
             padding: 0 !important;
@@ -836,7 +835,7 @@
             imageTimeout: 0,
             removeContainer: false,
             onclone: (clonedDoc) => {
-                // Kunci semua posisi dan gaya agar tidak berubah saat disimpan
+                // Ambil elemen dengan nama ID yang BENAR
                 const clonedStempel = clonedDoc.getElementById('stempel-container');
                 const clonedTimeBadge = clonedDoc.querySelector('.time-badge');
                 const clonedTime = clonedDoc.getElementById('out-time');
@@ -845,11 +844,11 @@
                 
                 // Kunci posisi stempel
                 clonedStempel.style.transform = `scale(${document.getElementById('stempelSize').value})`;
-                clonedStempel.style.transformOrigin = getComputedStyle(stempelContainer).transformOrigin;
-                clonedStempel.style.bottom = getComputedStyle(stempelContainer).bottom;
-                clonedStempel.style.top = getComputedStyle(stempelContainer).top;
-                clonedStempel.style.left = getComputedStyle(stempelContainer).left;
-                clonedStempel.style.right = getComputedStyle(stempelContainer).right;
+                clonedStempel.style.transformOrigin = getComputedStyle(clonedStempel).transformOrigin;
+                clonedStempel.style.bottom = getComputedStyle(clonedStempel).bottom;
+                clonedStempel.style.top = getComputedStyle(clonedStempel).top;
+                clonedStempel.style.left = getComputedStyle(clonedStempel).left;
+                clonedStempel.style.right = getComputedStyle(clonedStempel).right;
                 clonedStempel.style.lineHeight = '1.5';
                 
                 // Kunci kotak jam dan centang
