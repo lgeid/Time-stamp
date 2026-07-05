@@ -22,7 +22,6 @@
             --success-hover: #218838;
             --accent: #f2c12e;
             --shadow: 0 4px 12px rgba(0,0,0,0.4);
-            --stempel-scale: 1;
         }
 
         .light-mode {
@@ -135,19 +134,28 @@
         .mini-map-container .coords { background: rgba(0,0,0,0.7); color: white; font-size: 9px; padding: 2px 4px; border-radius: 3px; letter-spacing: 0.5px; font-weight: 600; }
 
         .top-right { top: 20px; right: 20px; text-align: right; }
-        .logo-text { font-size: 22px; font-weight: 900; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .logo-text { font-size: 22px; font-weight: 900; margin-bottom: 4px; }
         .logo-text .brand { color: #f2c12e; } 
         .accuracy { font-size: 13px; opacity: 0.95; font-weight: 500; }
-        .right-edge { right: 15px; top: 140px; transform: rotate(-90deg); transform-origin: right top; font-size: 11px; letter-spacing: 1.2px; opacity: 0.85; white-space: nowrap; font-weight: 500; }
+        .right-edge { right: 15px; top: 140px; transform: rotate(-90deg); transform-origin: right top; font-size: 11px; opacity: 0.85; white-space: nowrap; font-weight: 500; }
+
+        /* PERBAIKAN BUG APK: PAKSA KERNING DAN SPASI NORMAL AGAR TIDAK TUMPANG TINDIH */
+        .stempel-wrapper, .stempel-wrapper * { 
+            letter-spacing: 0px !important; 
+            font-kerning: none !important;
+            font-variant-ligatures: none !important;
+            text-rendering: geometricPrecision !important;
+            font-family: sans-serif !important;
+        }
 
         /* POSISI STEMPEL */
-        .stempel-wrapper { max-width: 85%; transform-origin: inherit !important; transform: scale(var(--stempel-scale)) !important; line-height: 1.5 !important; }
+        .stempel-wrapper { max-width: 85%; transform-origin: inherit !important; line-height: 1.5 !important; }
         .stempel-wrapper.bottom-left { bottom: 25px; left: 20px; text-align: left; transform-origin: bottom left !important; }
         .stempel-wrapper.bottom-right { bottom: 25px; right: 20px; text-align: right; transform-origin: bottom right !important; }
         .stempel-wrapper.top-left { top: 140px; left: 20px; text-align: left; transform-origin: top left !important; }
         .stempel-wrapper.top-right { top: 140px; right: 20px; text-align: right; transform-origin: top right !important; }
 
-        /* BUG FIX: BASE STYLE STEMPEL AMAN UNTUK HTML2CANVAS */
+        /* BASE STYLE STEMPEL */
         .time-badge {
             display: flex !important; align-items: center !important; justify-content: flex-start !important;
             min-height: 48px !important; padding: 8px 16px !important; border-radius: 8px !important;
@@ -155,7 +163,6 @@
         }
         #out-time { font-size: 32px !important; font-weight: 800 !important; line-height: 1 !important; margin: 0 !important; }
         
-        /* Check icon dipisahkan jadi elemen span nyata agar terbaca html2canvas */
         .check-circle {
             width: 28px !important; height: 28px !important; border-radius: 50% !important;
             display: flex !important; align-items: center !important; justify-content: center !important;
@@ -167,7 +174,7 @@
         .info-date, .info-address { font-size: 16px !important; margin-bottom: 4px !important; line-height: 1.4 !important; font-weight: 600 !important; display: block !important; }
 
         /* ======================================================= */
-        /* GAYA STEMPEL (Menggunakan Hex Code Mutlak tanpa var CSS)*/
+        /* GAYA STEMPEL (Hex Code Mutlak)                          */
         /* ======================================================= */
         
         /* 1. KLASIK MERAH */
@@ -209,7 +216,7 @@
 
         @media (max-width: 480px) {
             body { padding: 10px; }
-            .right-edge { font-size: 9px; top: 120px; }
+            .right-edge { top: 120px; }
             .mini-map-container { width: 75px; height: 95px; }
             .mini-map-container .pin { font-size: 22px; }
             .stempel-wrapper { max-width: 90%; }
@@ -343,7 +350,7 @@
 
             <div class="overlay right-edge" id="out-verify"></div>
 
-            <div class="overlay stempel-wrapper bottom-left style-klasik" id="stempel-container">
+            <div class="overlay stempel-wrapper bottom-left style-klasik" id="stempel-container" style="transform: scale(1);">
                 <div class="time-badge">
                     <span id="out-time">21:50</span>
                     <span class="check-circle"><span class="icon-v">✔</span></span>
@@ -425,8 +432,9 @@
             document.getElementById('miniMapWidget').style.display = e.target.value === 'show' ? 'flex' : 'none';
         });
 
+        // PERBAIKAN BUG APK: Skala disuntikkan langsung lewat JS murni ke Elemen
         document.getElementById('stempelSize').addEventListener('input', function(e) {
-            document.documentElement.style.setProperty('--stempel-scale', e.target.value);
+            stempel.style.transform = `scale(${e.target.value})`;
         });
 
         const syncInputs = [
@@ -508,21 +516,19 @@
         Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
         const container = document.getElementById('canvas-container');
         
+        // PERBAIKAN BUG APK: onclone dihapus total agar tidak terjadi double-rendering di Android
         html2canvas(container, { 
             useCORS: true, 
             scale: 3, 
-            backgroundColor: null,
-            onclone: (clonedDoc) => {
-                const clonedStempel = clonedDoc.getElementById('stempel-container');
-                clonedStempel.style.transform = `scale(${document.getElementById('stempelSize').value})`;
-                clonedStempel.style.transformOrigin = getComputedStyle(clonedStempel).transformOrigin;
-            }
+            backgroundColor: null
         }).then(canvas => {
             const link = document.createElement('a');
             link.download = `Timemark_Pro_${new Date().getTime()}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
             Swal.fire({ icon: 'success', title: 'Berhasil Disimpan!', confirmButtonColor: '#ff0000' });
+        }).catch(err => {
+            Swal.fire({ icon: 'error', title: 'Gagal Menyimpan!', text: err.message });
         });
     }
 </script>
