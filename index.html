@@ -22,6 +22,15 @@
             --success-hover: #218838;
             --accent: #f2c12e;
             --shadow: 0 4px 12px rgba(0,0,0,0.4);
+            --stempel-scale: 1;
+            --gap-xs: 8px;
+            --gap-sm: 12px;
+            --gap-md: 18px;
+            --gap-lg: 24px;
+            --radius: 12px;
+            /* JARAK KE PINGGIR DIPERKECIL */
+            --edge-padding: 12px;
+            --edge-padding-landscape: 10px;
         }
 
         .light-mode {
@@ -35,202 +44,467 @@
         }
 
         * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+            box-sizing: border-box !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
         body {
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-main);
             color: var(--text-main);
-            padding: 15px;
+            padding: 16px;
             min-height: 100vh;
             transition: background-color 0.3s ease, color 0.3s ease;
+            font-size: 16px;
+            line-height: 1.5;
         }
 
-        h2 { text-align: center; margin-bottom: 20px; font-size: 22px; font-weight: 700; }
+        h2 { 
+            text-align: center; 
+            margin-bottom: var(--gap-lg) !important; 
+            font-size: 28px; 
+            font-weight: 800; 
+        }
 
-        .app-container { display: flex; flex-direction: column; gap: 20px; max-width: 850px; margin: 0 auto; }
-        .control-panel { background-color: var(--bg-panel); padding: 20px; border-radius: 12px; box-shadow: var(--shadow); transition: background-color 0.3s ease; }
+        .app-container { 
+            display: flex; 
+            flex-direction: column; 
+            gap: var(--gap-lg); 
+            max-width: 900px; 
+            margin: 0 auto; 
+        }
+        .control-panel { 
+            background-color: var(--bg-panel); 
+            padding: 22px; 
+            border-radius: var(--radius); 
+            box-shadow: var(--shadow); 
+            transition: background-color 0.3s ease; 
+        }
         
         .section-title {
-            font-size: 14px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px;
-            margin: 20px 0 10px 0; padding-bottom: 5px; border-bottom: 1px solid var(--border-color); font-weight: bold;
+            font-size: 17px; 
+            color: var(--accent); 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            margin: var(--gap-md) 0 var(--gap-sm) 0 !important; 
+            padding-bottom: 8px; 
+            border-bottom: 1px solid var(--border-color); 
+            font-weight: 800;
         }
-        .section-title:first-child { margin-top: 0; }
+        .section-title:first-child { margin-top: 0 !important; }
 
-        .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
-        .panel-title { font-size: 18px; font-weight: 600; margin: 0; }
-        .toggle-btn { background: none; border: 1px solid var(--border-color); color: var(--text-main); padding: 6px 12px; border-radius: 6px; font-size: 14px; cursor: pointer; }
+        .panel-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: var(--gap-md) !important; 
+            padding-bottom: 12px; 
+            border-bottom: 1px solid var(--border-color); 
+        }
+        .panel-title { font-size: 20px; font-weight: 700; margin: 0; }
+        .toggle-btn { 
+            background: none; 
+            border: 1px solid var(--border-color); 
+            color: var(--text-main); 
+            padding: 10px 16px; 
+            border-radius: 8px; 
+            font-size: 15px; 
+            font-weight: 600;
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+        }
         .toggle-btn:hover { background-color: var(--bg-input); }
 
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; margin-bottom: 6px; font-size: 14px; color: var(--text-muted); font-weight: 500; }
-        .input-group input, .input-group select {
-            width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px;
-            background-color: var(--bg-input); color: var(--text-main); font-family: inherit; font-size: 15px;
+        .input-group { margin-bottom: var(--gap-md) !important; }
+        .input-group label { 
+            display: block; 
+            margin-bottom: 8px !important; 
+            font-size: 16px; 
+            color: var(--text-muted); 
+            font-weight: 600; 
         }
-        .input-group input:focus, .input-group select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(242, 193, 46, 0.2); }
+        .input-group input, .input-group select {
+            width: 100%; 
+            padding: 14px 16px; 
+            border: 1px solid var(--border-color); 
+            border-radius: 10px;
+            background-color: var(--bg-input); 
+            color: var(--text-main); 
+            font-family: inherit; 
+            font-size: 17px; 
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .input-group input:focus, .input-group select:focus { 
+            outline: none; 
+            border-color: var(--accent); 
+            box-shadow: 0 0 0 3px rgba(242, 193, 46, 0.2); 
+        }
 
-        .slider-container { display: flex; align-items: center; gap: 10px; padding: 10px 0; }
-        .slider-container input[type="range"] { flex: 1; }
+        .slider-container { 
+            display: flex; 
+            align-items: center; 
+            gap: var(--gap-sm); 
+            padding: 14px 8px; 
+            font-size: 15px;
+            font-weight: 500;
+        }
+        .slider-container input[type="range"] { flex: 1; height: 6px; }
         
         button {
-            width: 100%; padding: 13px; background-color: var(--primary); color: white; border: none; 
-            border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-top: 10px;
+            width: 100%; 
+            padding: 16px; 
+            background-color: var(--primary); 
+            color: white; 
+            border: none; 
+            border-radius: 10px; 
+            font-size: 18px; 
+            font-weight: 700; 
+            cursor: pointer; 
+            margin-top: var(--gap-sm) !important;
             transition: transform 0.1s ease, background-color 0.2s ease;
         }
         button:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
         button:active { transform: translateY(0); }
 
-        .btn-container { display: flex; gap: 10px; flex-wrap: wrap; }
-        .btn-half { flex: 1 1 calc(50% - 5px); min-width: 140px; font-size: 14px; padding: 11px; margin: 0; }
+        .btn-container { display: flex; gap: var(--gap-sm); flex-wrap: wrap; }
+        .btn-half { 
+            flex: 1 1 calc(50% - 6px); 
+            min-width: 150px; 
+            font-size: 16px; 
+            padding: 14px !important; 
+            margin: 0 !important; 
+            font-weight: 600;
+            transition: all 0.2s ease; 
+        }
         .btn-gallery { background-color: #555555; } .btn-gallery:hover { background-color: #666666; }
         .btn-camera { background-color: var(--secondary); } .btn-camera:hover { background-color: var(--secondary-hover); }
         .btn-switch { background-color: #9932CC; } .btn-switch:hover { background-color: #7B22A6; }
-        .btn-secondary { background-color: #444; margin-top: 5px; } .btn-secondary:hover { background-color: #555; }
+        .btn-secondary { 
+            background-color: #444; 
+            margin-top: var(--gap-xs) !important; 
+            font-size: 15px;
+            padding: 12px !important;
+        } 
+        .btn-secondary:hover { background-color: #555; }
 
         .snap-btn-wrapper {
-            display: none; justify-content: center; padding: 25px 0; background: rgba(0,0,0,0.7);
-            border-radius: 0 0 8px 8px; margin-top: -4px; position: relative; z-index: 10;
+            display: none; 
+            justify-content: center; 
+            padding: 30px 0; 
+            background: rgba(0,0,0,0.7);
+            border-radius: 0 0 10px 10px; 
+            margin-top: -4px; 
+            position: relative; 
+            z-index: 10;
         }
         .snap-btn-wrapper.show { display: flex; }
         .btn-snap {
-            width: 72px; height: 72px; border: 5px solid #ffffff; border-radius: 50%;
-            background: var(--success); box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.3); transition: all 0.15s ease;
+            width: 80px; 
+            height: 80px; 
+            border: 6px solid #ffffff; 
+            border-radius: 50%;
+            background: var(--success); 
+            box-shadow: 0 0 0 5px rgba(40, 167, 69, 0.3); 
+            transition: all 0.15s ease;
         }
         .btn-snap::after {
-            content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 24px; height: 24px; background: white; border-radius: 4px;
+            content: ""; 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%);
+            width: 28px; 
+            height: 28px; 
+            background: white; 
+            border-radius: 5px;
         }
         .btn-snap:hover { transform: scale(1.05); background: var(--success-hover); }
         .btn-snap:active { transform: scale(0.95); }
 
-        .btn-group-row { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-        .btn-group-row button { flex: 1; min-width: 120px; }
+        .btn-group-row { display: flex; gap: var(--gap-sm); margin-top: var(--gap-sm) !important; flex-wrap: wrap; }
+        .btn-group-row button { flex: 1; min-width: 130px; }
 
-        #camera-stream-container { display: none; width: 100%; max-width: 100%; background: #000; border-radius: 8px; overflow: hidden; margin-bottom: 15px; position: relative; }
+        #camera-stream-container { 
+            display: none; 
+            width: 100%; 
+            max-width: 100%; 
+            background: #000; 
+            border-radius: var(--radius); 
+            overflow: hidden; 
+            margin-bottom: var(--gap-md) !important; 
+            position: relative; 
+        }
         #video-stream { width: 100%; height: auto; display: block; transform: scaleX(1); transition: transform 0.2s ease; }
         #video-stream.user-facing { transform: scaleX(-1); }
 
         .preview-wrapper {
-            display: flex; justify-content: center; background: #000; border: 2px solid var(--border-color); 
-            border-radius: 12px; overflow: hidden; padding: 10px;
+            display: flex; 
+            justify-content: center; 
+            background: #000; 
+            border: 2px solid var(--border-color); 
+            border-radius: var(--radius); 
+            overflow: hidden; 
+            padding: 12px; 
+            transition: all 0.3s ease;
         }
-        #canvas-container { position: relative; display: inline-block; max-width: 100%; box-shadow: var(--shadow); background: #000; }
-        
-        /* === DITAMBAH: IZIN TEKAN LAMA & BAGIKAN === */
+        #canvas-container { 
+            position: relative !important; 
+            display: inline-block !important; 
+            max-width: 100% !important; 
+            box-shadow: var(--shadow) !important; 
+            background: #000 !important; 
+            overflow: visible !important;
+        }
         #preview-img { 
-            display: block; max-width: 100%; height: auto; object-fit: contain; border-radius: 4px;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
-            -webkit-touch-callout: default !important; /* Aktifkan menu tekan lama di iOS */
+            display: block !important; 
+            max-width: 100% !important; 
+            height: auto !important; 
+            object-fit: contain !important; 
+            border-radius: 6px !important; 
+            position: relative !important;
         }
 
-        .overlay { position: absolute; color: white; pointer-events: none; font-family: inherit; font-weight: 700 !important; }
+        .overlay { 
+            position: absolute !important; 
+            color: white !important; 
+            pointer-events: none !important; 
+            font-family: inherit !important; 
+            font-weight: 700 !important; 
+            z-index: 20 !important;
+            visibility: visible !important; 
+            opacity: 1 !important; 
+            display: block !important;
+        }
 
-        /* PETA MINI KIRI ATAS */
+        /* === MINI PETA GAYA SATELIT & PERBAIKAN SEMBUNYIKAN === */
         .mini-map-container {
-            position: absolute; top: 20px; left: 20px; width: 85px; height: 110px; background-color: #e0e6c8;
-            background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><path d="M20,0 L20,100 M60,0 L60,100 M0,30 L100,30 M0,70 L100,70" stroke="%23ffffff" stroke-width="4"/><path d="M30,-10 L80,110" stroke="%23f2c12e" stroke-width="6"/></svg>');
-            border: 2px solid white; border-radius: 6px; box-shadow: 2px 2px 8px rgba(0,0,0,0.6);
-            display: flex; flex-direction: column; justify-content: flex-end; align-items: center; padding-bottom: 6px; z-index: 5;
+            position: absolute !important; 
+            top: var(--edge-padding) !important; 
+            left: var(--edge-padding) !important; 
+            width: 90px !important; 
+            height: 120px !important; 
+            background: linear-gradient(rgba(0,60,0,0.3), rgba(0,40,0,0.5)), 
+                        url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="sat" width="20" height="20" patternUnits="userSpaceOnUse"><rect fill="%232d5016" width="20" height="20"/><circle fill="%234a7c2f" cx="5" cy="5" r="3"/><circle fill="%233a6422" cx="15" cy="15" r="4"/></pattern></defs><rect fill="url(%23sat)" width="100" height="100"/><path d="M20,0 L20,100 M60,0 L60,100 M0,30 L100,30 M0,70 L100,70" stroke="%23ffffff" stroke-width="2" opacity="0.6"/><path d="M30,-10 L80,110" stroke="%23ffd700" stroke-width="5" opacity="0.8"/></svg>') !important;
+            border: 2px solid white !important; 
+            border-radius: 8px !important; 
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.6) !important;
+            display: flex !important; 
+            flex-direction: column !important; 
+            justify-content: flex-end !important; 
+            align-items: center !important; 
+            padding-bottom: 8px !important; 
+            z-index: 5 !important;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
         }
-        .mini-map-container .pin { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); font-size: 26px; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
-        .mini-map-container .coords { background: rgba(0,0,0,0.7); color: white; font-size: 9px; padding: 2px 4px; border-radius: 3px; letter-spacing: 0.5px; font-weight: 600; }
-
-        .top-right { top: 20px; right: 20px; text-align: right; }
-        /* === DIPERKECIL TULISAN SHANTED TIMEMARK === */
-        .logo-text { font-size: 17px; font-weight: 900; letter-spacing: 0.5px; margin-bottom: 2px; }
-        .logo-text .brand { color: #f2c12e; } 
-        .accuracy { font-size: 11px; opacity: 0.95; font-weight: 500; }
-        
-        .right-edge { 
-            right: 35px; 
-            top: 150px; 
-            transform: rotate(-90deg); 
-            transform-origin: right top; 
-            font-size: 11px; 
-            opacity: 1; 
-            white-space: nowrap; 
-            font-weight: 700; 
-            z-index: 10; 
-            color: #ffffff;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+        .mini-map-container.hidden {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+        }
+        .mini-map-container .pin { 
+            position: absolute !important; 
+            top: 45% !important; 
+            left: 50% !important; 
+            transform: translate(-50%, -50%) !important; 
+            font-size: 28px !important; 
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important; 
+            filter: drop-shadow(0 0 3px #ff0000);
+        }
+        .mini-map-container .coords { 
+            background: rgba(0,0,0,0.8) !important; 
+            color: white !important; 
+            font-size: 10px !important; 
+            padding: 3px 6px !important; 
+            border-radius: 4px !important; 
+            letter-spacing: 0.5px !important; 
+            font-weight: 700 !important; 
+            border-top: 1px solid rgba(255,255,255,0.3);
         }
 
-        .stempel-wrapper, .stempel-wrapper * { 
-            letter-spacing: 0px !important; 
-            font-kerning: none !important;
-            font-variant-ligatures: none !important;
-            text-rendering: geometricPrecision !important;
-            font-family: sans-serif !important;
+        /* === TEKS KANAN ATAS: JARAK KE PINGGIR DIPERKECIL === */
+        .top-right { 
+            top: var(--edge-padding) !important; 
+            right: var(--edge-padding) !important; 
+            text-align: right !important; 
+        }
+        .logo-text { 
+            font-size: 24px !important; 
+            font-weight: 900 !important; 
+            letter-spacing: 0.6px !important; 
+            margin-bottom: 4px !important; 
+        }
+        .logo-text .brand { color: #f2c12e !important; } 
+        .accuracy { 
+            font-size: 14px !important; 
+            opacity: 0.95 !important; 
+            font-weight: 600 !important; 
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important; 
         }
 
-        .stempel-wrapper { max-width: 85%; transform-origin: inherit !important; line-height: 1.5 !important; }
-        .stempel-wrapper.bottom-left { bottom: 25px; left: 20px; text-align: left; transform-origin: bottom left !important; }
-        .stempel-wrapper.bottom-right { bottom: 25px; right: 20px; text-align: right; transform-origin: bottom right !important; }
-        .stempel-wrapper.top-left { top: 140px; left: 20px; text-align: left; transform-origin: top left !important; }
-        .stempel-wrapper.top-right { top: 140px; right: 20px; text-align: right; transform-origin: top right !important; }
+        /* === STEMPEL: JARAK KE PINGGIR DIPERKECIL === */
+        .stempel-wrapper { 
+            max-width: 90% !important; 
+            transform-origin: inherit !important; 
+            line-height: 1.6 !important; 
+            width: max-content !important; 
+            z-index: 25 !important;
+            transition: all 0.2s ease;
+        }
+        .stempel-wrapper.bottom-left { 
+            bottom: var(--edge-padding) !important; 
+            left: var(--edge-padding) !important; 
+            text-align: left !important; 
+            transform-origin: bottom left !important; 
+        }
+        .stempel-wrapper.bottom-right { 
+            bottom: var(--edge-padding) !important; 
+            right: var(--edge-padding) !important; 
+            text-align: right !important; 
+            transform-origin: bottom right !important; 
+        }
+        .stempel-wrapper.top-left { 
+            top: calc(var(--edge-padding) + 110px) !important; 
+            left: var(--edge-padding) !important; 
+            text-align: left !important; 
+            transform-origin: top left !important; 
+        }
+        .stempel-wrapper.top-right { 
+            top: var(--edge-padding) !important; 
+            right: var(--edge-padding) !important; 
+            text-align: right !important; 
+            transform-origin: top right !important; 
+        }
 
+        /* BASE STYLE STEMPEL AMAN UNTUK HTML2CANVAS */
         .time-badge {
-            display: flex !important; align-items: center !important; justify-content: flex-start !important;
-            min-height: 48px !important; padding: 8px 16px !important; border-radius: 8px !important;
-            margin-bottom: 8px !important; gap: 12px !important; width: max-content !important;
+            display: flex !important; 
+            align-items: center !important; 
+            justify-content: flex-start !important;
+            min-height: 52px !important; 
+            padding: 10px 18px !important; 
+            border-radius: 10px !important;
+            margin-bottom: 10px !important; 
+            gap: 14px !important; 
+            width: max-content !important; 
+            flex-wrap: nowrap !important;
         }
-        #out-time { font-size: 32px !important; font-weight: 800 !important; line-height: 1 !important; margin: 0 !important; }
+        #out-time { font-size: 34px !important; font-weight: 800 !important; line-height: 1 !important; margin: 0 !important; flex-shrink: 0 !important; }
         
         .check-circle {
-            width: 28px !important; height: 28px !important; border-radius: 50% !important;
-            display: flex !important; align-items: center !important; justify-content: center !important;
-            font-size: 16px !important; font-weight: 900 !important;
+            width: 30px !important; 
+            height: 30px !important; 
+            border-radius: 50% !important;
+            display: flex !important; 
+            align-items: center !important; 
+            justify-content: center !important;
+            font-size: 18px !important; 
+            font-weight: 900 !important; 
+            flex-shrink: 0 !important;
         }
         
-        .info-container { display: block !important; margin-top: 8px !important; }
-        .info-title { font-size: 24px !important; font-weight: 800 !important; margin-bottom: 6px !important; line-height: 1.2 !important; }
-        .info-date, .info-address { font-size: 16px !important; margin-bottom: 4px !important; line-height: 1.4 !important; font-weight: 600 !important; display: block !important; }
+        .info-container { display: block !important; margin-top: 10px !important; }
+        .info-title { font-size: 26px !important; font-weight: 800 !important; margin-bottom: 8px !important; line-height: 1.3 !important; display: block !important; }
+        .info-date, .info-address { 
+            font-size: 17px !important; 
+            margin-bottom: 6px !important; 
+            line-height: 1.5 !important; 
+            font-weight: 600 !important; 
+            display: block !important; 
+        }
+        /* BAGIAN VERIFIKASI DI BAWAH STEMPEL */
+        .verify-section {
+            margin-top: 12px !important;
+            padding-top: 10px !important;
+            border-top: 1px solid rgba(255,255,255,0.3) !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            flex-wrap: wrap !important;
+        }
+        .verify-label {
+            font-size: 13px !important;
+            font-weight: 500 !important;
+            opacity: 0.9 !important;
+            color: #dddddd !important;
+        }
+        #out-verify {
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            letter-spacing: 0.5px !important;
+            color: #f2c12e !important;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.6) !important;
+        }
 
+        /* === GAYA STEMPEL MUTLAK === */
         .style-klasik .time-badge { background-color: #ff0000 !important; box-shadow: 2px 2px 6px rgba(0,0,0,0.5) !important; }
         .style-klasik #out-time { color: #ffffff !important; }
         .style-klasik .check-circle { background-color: #ffffff !important; }
         .style-klasik .check-circle .icon-v { color: #ff0000 !important; }
-        .style-klasik .info-title, .style-klasik .info-date, .style-klasik .info-address { color: #ffffff !important; }
+        .style-klasik .info-container { padding: 0 !important; border: none !important; }
+        .style-klasik .info-title, .style-klasik .info-date, .style-klasik .info-address { color: #ffffff !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important; }
+        .style-klasik .verify-section { border-top-color: rgba(255,255,255,0.4) !important; }
 
         .style-gelap .time-badge { background-color: #222222 !important; box-shadow: 2px 2px 6px rgba(0,0,0,0.5) !important; border: 1px solid #444444 !important; }
         .style-gelap #out-time { color: #ffffff !important; }
         .style-gelap .check-circle { background-color: #007bff !important; }
         .style-gelap .check-circle .icon-v { color: #ffffff !important; }
-        .style-gelap .info-container { border-left: 4px solid #007bff !important; padding-left: 12px !important; }
+        .style-gelap .info-container { border-left: 4px solid #007bff !important; padding-left: 14px !important; }
         .style-gelap .info-title, .style-gelap .info-date, .style-gelap .info-address { color: #ffffff !important; text-shadow: 1px 1px 2px black !important;}
+        .style-gelap .verify-section { border-top-color: rgba(0,123,255,0.4) !important; }
 
-        .style-kaca.stempel-wrapper { background: rgba(0, 0, 0, 0.45) !important; padding: 15px !important; border-radius: 12px !important; border: 1px solid rgba(255,255,255,0.2) !important; box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important;}
-        .style-kaca .time-badge { background-color: transparent !important; padding: 0 !important; box-shadow: none !important; margin-bottom: 12px !important;}
+        .style-kaca.stempel-wrapper { background: rgba(0, 0, 0, 0.45) !important; padding: 18px !important; border-radius: 14px !important; border: 1px solid rgba(255,255,255,0.2) !important; box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important;}
+        .style-kaca .time-badge { background-color: transparent !important; padding: 0 !important; box-shadow: none !important; margin-bottom: 14px !important;}
         .style-kaca #out-time { color: #f2c12e !important; }
         .style-kaca .check-circle { background-color: #f2c12e !important; }
         .style-kaca .check-circle .icon-v { color: #000000 !important; }
-        .style-kaca .info-title, .style-kaca .info-date, .style-kaca .info-address { color: #ffffff !important; }
+        .style-kaca .info-container { padding: 0 !important; border: none !important; }
+        .style-kaca .info-title, .style-kaca .info-date, .style-kaca .info-address { color: #ffffff !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important; }
 
-        .style-minimalis .time-badge { background-color: transparent !important; padding: 0 !important; box-shadow: none !important; margin-bottom: 5px !important; }
-        .style-minimalis #out-time { color: #f2c12e !important; font-size: 38px !important; text-shadow: 2px 2px 0px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000 !important; }
+        .style-minimalis .time-badge { background-color: transparent !important; padding: 0 !important; box-shadow: none !important; margin-bottom: 6px !important; }
+        .style-minimalis #out-time { color: #f2c12e !important; font-size: 40px !important; text-shadow: 2px 2px 0px #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000 !important; }
         .style-minimalis .check-circle { display: none !important; }
-        .style-minimalis .info-container { padding-top: 8px !important; border-top: 3px solid #f2c12e !important; }
+        .style-minimalis .info-container { padding-top: 10px !important; border-top: 3px solid #f2c12e !important; }
         .style-minimalis .info-title, .style-minimalis .info-date, .style-minimalis .info-address { color: #ffffff !important; text-shadow: 1px 1px 3px black !important; }
 
-        .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 15px; }
+        .settings-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: var(--gap-md); 
+            margin-bottom: var(--gap-md) !important; 
+        }
         @keyframes snapFlash { 0% { opacity: 1; filter: brightness(1); } 50% { opacity: 0.7; filter: brightness(2); } 100% { opacity: 1; filter: brightness(1); } }
         .snap-flash { animation: snapFlash 0.3s ease-out; }
 
+        /* === PENYESUAIAN KHUSUS MODE LANDSCAPE === */
+        @media (orientation: landscape) {
+            :root {
+                --edge-padding: var(--edge-padding-landscape);
+            }
+            .stempel-wrapper.top-left { top: calc(var(--edge-padding) + 95px) !important; }
+            .mini-map-container { width: 75px !important; height: 100px !important; }
+            .logo-text { font-size: 20px !important; }
+            .info-title { font-size: 22px !important; }
+            #out-time { font-size: 30px !important; }
+            .verify-label { font-size: 12px !important; }
+            #out-verify { font-size: 13px !important; }
+        }
+
+        /* PENYESUAIAN LAYAR KECIL */
         @media (max-width: 480px) {
-            body { padding: 10px; }
-            .right-edge { top: 130px; right: 28px; }
-            .mini-map-container { width: 75px; height: 95px; }
-            .mini-map-container .pin { font-size: 22px; }
-            .stempel-wrapper { max-width: 90%; }
-            .logo-text { font-size: 15px; }
-            .accuracy { font-size: 10px; }
+            body { padding: 12px; font-size: 15px; }
+            h2 { font-size: 24px; }
+            .panel-title { font-size: 18px; }
+            .section-title { font-size: 16px; }
+            .input-group label { font-size: 15px; }
+            .input-group input, .input-group select { font-size: 16px; padding: 12px; }
+            .mini-map-container { width: 80px !important; height: 105px !important; }
+            .mini-map-container .pin { font-size: 24px !important; }
+            .stempel-wrapper { max-width: 92% !important; }
+            .btn-half { font-size: 15px; padding: 12px !important; }
+            button { font-size: 17px; padding: 14px; }
         }
     </style>
 </head>
@@ -256,7 +530,7 @@
 
         <div id="camera-stream-container">
             <video id="video-stream" autoplay playsinline muted></video>
-            <div class="btn-group-row" style="padding: 12px;">
+            <div class="btn-group-row" style="padding: 16px;">
                 <button type="button" class="btn-switch" id="switchCamBtn" onclick="switchCamera()">🔄 Kamera Depan/Belakang</button>
             </div>
             <div class="snap-btn-wrapper" id="snapBtnWrapper">
@@ -334,7 +608,7 @@
             <input type="text" id="address2Input" value="Gowa, Sulawesi Selatan 92173">
         </div>
         <div class="input-group">
-            <label>Kode Verifikasi Kanan</label>
+            <label>Kode Verifikasi</label>
             <input type="text" id="verifyInput" readonly placeholder="Dibuat otomatis">
         </div>
 
@@ -359,9 +633,7 @@
                 <div class="accuracy">Foto 100% akurat</div>
             </div>
 
-            <div class="overlay right-edge" id="out-verify"></div>
-
-            <div class="overlay stempel-wrapper bottom-left style-klasik" id="stempel-container" style="transform: scale(1);">
+            <div class="overlay stempel-wrapper bottom-left style-klasik" id="stempel-container">
                 <div class="time-badge">
                     <span id="out-time">21:50</span>
                     <span class="check-circle"><span class="icon-v">✔</span></span>
@@ -372,6 +644,10 @@
                     <div class="info-address" id="out-address1">Pallantikang, Kec. Pattallassang, Kabupaten</div>
                     <div class="info-address" id="out-address2">Gowa, Sulawesi Selatan 92173</div>
                 </div>
+                <div class="verify-section">
+                    <span class="verify-label">Shanted™ Timemark Verified •</span>
+                    <span id="out-verify"></span>
+                </div>
             </div>
         </div>
     </div>
@@ -380,6 +656,7 @@
 <script>
     let videoStreamTrack = null;
     let currentCameraMode = 'environment';
+    let currentScale = 1;
 
     function generateRandomVerifyCode() {
         const prefix = "ITVPSTR3";
@@ -424,13 +701,20 @@
         if(localStorage.getItem('theme') === 'light') toggleTheme();
         generateRandomData();
         setupControls();
-        // === TAMBAHAN: TEKAN LAMA UNTUK BAGIKAN ===
-        setupLongPressShare();
     };
 
     function setupControls() {
         const stempel = document.getElementById('stempel-container');
+        const mapWidget = document.getElementById('miniMapWidget');
         
+        document.getElementById('mapToggle').addEventListener('change', function(e) {
+            if(e.target.value === 'hide') {
+                mapWidget.classList.add('hidden');
+            } else {
+                mapWidget.classList.remove('hidden');
+            }
+        });
+
         document.getElementById('positionSelect').addEventListener('change', function(e) {
             stempel.classList.remove('bottom-left', 'bottom-right', 'top-left', 'top-right');
             stempel.classList.add(e.target.value);
@@ -441,12 +725,9 @@
             stempel.classList.add(e.target.value);
         });
 
-        document.getElementById('mapToggle').addEventListener('change', function(e) {
-            document.getElementById('miniMapWidget').style.display = e.target.value === 'show' ? 'flex' : 'none';
-        });
-
         document.getElementById('stempelSize').addEventListener('input', function(e) {
-            stempel.style.transform = `scale(${e.target.value})`;
+            currentScale = e.target.value;
+            stempel.style.transform = `scale(${currentScale})`;
         });
 
         const syncInputs = [
@@ -465,55 +746,6 @@
         });
     }
 
-    // === FUNGSI BARU: TEKAN LAMA GAMBAR UNTUK BAGIKAN ===
-    function setupLongPressShare() {
-        const img = document.getElementById('preview-img');
-        let timer;
-        const LAMA_TEKEN = 600; // Waktu tekan lama 0,6 detik
-
-        // Saat mulai tekan
-        img.addEventListener('touchstart', () => {
-            timer = setTimeout(() => {
-                Swal.fire({
-                    title: 'Pilihan Gambar',
-                    text: 'Tekan lama pada gambar untuk menu sistem, atau pilih di bawah ini',
-                    icon: 'info',
-                    showCancelButton: true,
-                    confirmButtonText: '📤 Bagikan',
-                    cancelButtonText: '❌ Tutup',
-                    confirmButtonColor: '#28a745'
-                }).then((res) => {
-                    if(res.isConfirmed) bagikanGambar();
-                });
-            }, LAMA_TEKEN);
-        });
-
-        // Saat lepas tekan/geser
-        ['touchend', 'touchmove', 'touchcancel'].forEach(ev => {
-            img.addEventListener(ev, () => clearTimeout(timer));
-        });
-    }
-
-    // Fungsi Bagikan Gambar Asli
-    async function bagikanGambar() {
-        const urlGambar = document.getElementById('preview-img').src;
-        if(navigator.share) {
-            try {
-                await navigator.share({
-                    title: 'Shanted™ Timemark',
-                    text: 'Bukti foto berstempel waktu & lokasi',
-                    url: urlGambar
-                });
-            } catch (err) {
-                if(err.name !== 'AbortError') {
-                    Swal.fire({icon:'info', title:'Gunakan menu sistem', text:'Tekan lama gambar lalu pilih "Bagikan" atau "Simpan Gambar"'});
-                }
-            }
-        } else {
-            Swal.fire({icon:'info', title:'Gunakan menu sistem', text:'Tekan lama gambar lalu pilih "Bagikan" atau "Simpan Gambar"'});
-        }
-    }
-
     async function startCamera() {
         stopCamera();
         const video = document.getElementById('video-stream');
@@ -529,7 +761,7 @@
             document.getElementById('camera-stream-container').style.display = 'block';
             snapWrapper.classList.add('show');
         } catch (err) {
-            Swal.fire({ icon: 'error', title: 'Gagal Akses Kamera' });
+            Swal.fire({ icon: 'error', title: 'Gagal Akses Kamera', text: 'Izinkan akses kamera di pengaturan aplikasi' });
         }
     }
 
@@ -569,26 +801,55 @@
         const file = e.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = event => { document.getElementById('preview-img').src = event.target.result; }
+        reader.onload = event => { 
+            document.getElementById('preview-img').src = event.target.result;
+        }
         reader.readAsDataURL(file);
     });
 
     function downloadImage() {
         Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
         const container = document.getElementById('canvas-container');
+        const mapWidget = document.getElementById('miniMapWidget');
+        const isMapHidden = mapWidget.classList.contains('hidden');
         
         html2canvas(container, { 
             useCORS: true, 
             scale: 3, 
-            backgroundColor: null
+            backgroundColor: null,
+            logging: false,
+            allowTaint: true,
+            imageTimeout: 15000,
+            onclone: (clonedDoc) => {
+                const clonedStempel = clonedDoc.getElementById('stempel-container');
+                const originalStempel = document.getElementById('stempel-container');
+                const clonedMap = clonedDoc.getElementById('miniMapWidget');
+                
+                if(isMapHidden) clonedMap.classList.add('hidden');
+                
+                clonedStempel.style.transform = `scale(${currentScale})`;
+                clonedStempel.style.transformOrigin = getComputedStyle(originalStempel).transformOrigin;
+                clonedStempel.className = originalStempel.className;
+
+                clonedDoc.getElementById('out-time').innerText = document.getElementById('out-time').innerText;
+                clonedDoc.getElementById('out-title').innerText = document.getElementById('out-title').innerText;
+                clonedDoc.getElementById('out-date').innerText = document.getElementById('out-date').innerText;
+                clonedDoc.getElementById('out-address1').innerText = document.getElementById('out-address1').innerText;
+                clonedDoc.getElementById('out-address2').innerText = document.getElementById('out-address2').innerText;
+                clonedDoc.getElementById('out-verify').innerText = document.getElementById('out-verify').innerText;
+                clonedDoc.getElementById('out-coords').innerText = document.getElementById('out-coords').innerText;
+
+                const clonedImg = clonedDoc.getElementById('preview-img');
+                clonedImg.src = document.getElementById('preview-img').src;
+            }
         }).then(canvas => {
             const link = document.createElement('a');
             link.download = `Timemark_Pro_${new Date().getTime()}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
-            Swal.fire({ icon: 'success', title: 'Berhasil Disimpan!', confirmButtonColor: '#ff0000' });
+            Swal.fire({ icon: 'success', title: '✅ Berhasil Disimpan!', text: 'Semua elemen pas menempel ke pinggir', confirmButtonColor: '#ff0000' });
         }).catch(err => {
-            Swal.fire({ icon: 'error', title: 'Gagal Menyimpan!', text: err.message });
+            Swal.fire({ icon: 'error', title: '❌ Gagal Menyimpan', text: err.message });
         });
     }
 </script>
